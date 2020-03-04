@@ -420,6 +420,74 @@ bool UMission::mission2(int &state)
   return finished;
 }
 
+
+/**
+ * Run mission
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission3(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    // tell the operatior what to do
+    printf("# press green to start.\n");
+    system("espeak \"press green to start\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 press green to start");
+    state++;
+    break;
+  case 1:
+    if (bridge->joy->button[BUTTON_GREEN])
+      state = 10;
+    break;
+  case 10: // follow black line for 0.5 m at a lower velocity
+    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=0, white=0 : dist=0.5");
+    // increase velocity and follow line until right IR sensor detects the guillotine gate
+    // gates are 45 cm wide and robot is approx 32 cm wide giving ~7 cm on either side
+    snprintf(lines[1], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : ir2 < 0.15");
+    //drive 25 cm to steer clear of the gate
+    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : dist=0.25");
+    // stop and create an event when arrived at this point
+    snprintf(lines[3], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[4], MAX_LEN, ": dist=1");
+    // send the 4 lines to the REGBOT
+    sendAndActivateSnippet(lines, 5);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 1\n", state);
+    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 1");
+    //
+    // go to wait for finished
+    state = 11;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 1 ended \n");
+    bridge->send("oled 5 \"mission 1 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+
+
 void UMission::openLog()
 {
   // make logfile
