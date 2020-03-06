@@ -358,12 +358,12 @@ bool UMission::mission1(int &state)
       state = 10;
     break;
   case 10: // follow black line for 0.5 m at a lower velocity
-    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=0, white=0 : dist=0.5");
+    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=1");
     // increase velocity and follow line until right IR sensor detects the guillotine gate
     // gates are 45 cm wide and robot is approx 32 cm wide giving ~7 cm on either side
-    snprintf(lines[1], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : ir2 < 0.15");
+    snprintf(lines[1], MAX_LEN, "vel=0.6, acc=1, edgel=-1, white=1 : ir1 < 0.15");
     //drive 25 cm to steer clear of the gate
-    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : dist=0.25");
+    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=0 : dist=0.20");
     // stop and create an event when arrived at this point
     snprintf(lines[3], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
