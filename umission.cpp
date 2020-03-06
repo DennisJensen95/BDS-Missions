@@ -407,13 +407,47 @@ bool UMission::mission1(int &state)
 bool UMission::mission2(int &state)
 {
   bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
   switch (state)
   {
-  case 1:
-
+  case 0:
+    // continue driving along the line until the T-cross is reached
+    snprintf(lines[0], MAX_LEN, "vel = 0.3, acc=1, edgel=1, white=1: xl >16");
+    // turn 90 degrees to the left
+    snprintf(lines[1], MAX_LEN, "vel=0, acc = 1, head=90: time=2");
+    // drive slowly until the gate at the end of the see saw is reached
+    snprintf(lines[2], MAX_LEN, "vel=0.15, acc=1, edgel=-1, white=1: ir1 < 0.15");
+    // drive 40 cm to clear the see saw
+    snprintf(lines[3], MAX_LEN, "vel=0.3, acc=1, edgel=-1, white=1: dist=0.4");
+    // create event 1
+    snprintf(lines[4], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[5], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 6);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 1\n", state);
+    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 1");
+    //
+    // go to wait for finished
+    state = 11;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
   default:
-    printf("mission 3 ended\n");
-    bridge->send("oled 5 mission 3 ended.");
+    printf("mission 2 ended \n");
+    bridge->send("oled 5 \"mission 2 ended.\"");
     finished = true;
     break;
   }
