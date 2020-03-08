@@ -354,6 +354,9 @@ bool UMission::mission1(int &state)
     state++;
     break;
   case 1:
+    // -------------------------
+    state = 10; //debug without controller
+    // -------------------------
     if (bridge->joy->button[BUTTON_GREEN])
       state = 10;
     break;
@@ -398,6 +401,7 @@ bool UMission::mission1(int &state)
   return finished;
 }
 
+
 /**
  * Run mission
  * \param state is kept by caller, but is changed here
@@ -412,26 +416,28 @@ bool UMission::mission2(int &state)
   switch (state)
   {
   case 0:
-    // continue driving along the line until the T-cross is reached
-    snprintf(lines[0], MAX_LEN, "vel = 0.3, acc=1, edgel=1, white=1: xl >16");
-    // turn 90 degrees to the left
-    snprintf(lines[1], MAX_LEN, "vel=0, acc = 1, head=90: time=2");
-    // drive slowly until the gate at the end of the see saw is reached
-    snprintf(lines[2], MAX_LEN, "vel=0.15, acc=1, edgel=-1, white=1: ir1 < 0.15");
-    // drive 40 cm to clear the see saw
-    snprintf(lines[3], MAX_LEN, "vel=0.3, acc=1, edgel=-1, white=1: dist=0.4");
+    // continue driving along the line until the first gate is found
+    snprintf(lines[0], MAX_LEN, "vel=0.5, acc=1.0, edgel=1.0, white=1: ir1<0.15");
+    // drive slowly towards the intersection
+    snprintf(lines[1], MAX_LEN, "vel=0.2,edgel=1,white=1: xl>6");
+    // pause
+    snprintf(lines[2], MAX_LEN, "vel=0: time=0.5");
+    // turn onto see saw
+    snprintf(lines[3], MAX_LEN, "vel=0.2, acc=0.5, tr=0.01: turn=90.0");
+    // pause
+    snprintf(lines[4], MAX_LEN, "vel=0: time=0.5");
     // create event 1
-    snprintf(lines[4], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[5], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[5], MAX_LEN, ": dist=1");
+    snprintf(lines[6], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 6);
+    sendAndActivateSnippet(lines, 7);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d sent mission snippet 1\n", state);
-    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 1");
+    printf("# case=%d sent mission snippet 2\n", state);
+    system("espeak \"code snippet 2.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 2");
     //
     // go to wait for finished
     state = 11;
@@ -469,35 +475,24 @@ bool UMission::mission3(int &state)
   switch (state)
   {
   case 0:
-    // tell the operatior what to do
-    printf("# press green to start.\n");
-    system("espeak \"press green to start\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 press green to start");
-    state++;
-    break;
-  case 1:
-    if (bridge->joy->button[BUTTON_GREEN])
-      state = 10;
-    break;
-  case 10: // follow black line for 0.5 m at a lower velocity
-    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=0, white=0 : dist=0.5");
-    // increase velocity and follow line until right IR sensor detects the guillotine gate
-    // gates are 45 cm wide and robot is approx 32 cm wide giving ~7 cm on either side
-    snprintf(lines[1], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : ir2 < 0.15");
-    //drive 25 cm to steer clear of the gate
-    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=0 : dist=0.25");
-    // stop and create an event when arrived at this point
+    // drive slowly until the gate at the end of the see saw is reached
+    snprintf(lines[0], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
+    // pause after reaching the ground
+    snprintf(lines[1], MAX_LEN, "vel=0.0: time=2.0");
+    // drive away from see saw
+    snprintf(lines[2], MAX_LEN, "vel=0.3: dist=0.6");
+    // create event 1
     snprintf(lines[3], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
     snprintf(lines[4], MAX_LEN, ": dist=1");
-    // send the 4 lines to the REGBOT
+    // send the 6 lines to the REGBOT
     sendAndActivateSnippet(lines, 5);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d sent mission snippet 1\n", state);
-    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 1");
+    printf("# case=%d sent mission snippet 3\n", state);
+    system("espeak \"code snippet 3.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 3");
     //
     // go to wait for finished
     state = 11;
@@ -512,8 +507,8 @@ bool UMission::mission3(int &state)
     break;
   case 999:
   default:
-    printf("mission 1 ended \n");
-    bridge->send("oled 5 \"mission 1 ended.\"");
+    printf("mission 3 ended \n");
+    bridge->send("oled 5 \"mission 3 ended.\"");
     finished = true;
     break;
   }
