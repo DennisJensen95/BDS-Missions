@@ -403,7 +403,6 @@ bool UMission::mission1(int &state)
     //
     // go to wait for finished
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -464,7 +463,6 @@ bool UMission::mission2(int &state)
     //
     // go to wait for finished
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -521,7 +519,6 @@ bool UMission::mission3(int &state)
     //
     // go to wait for finished
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -589,7 +586,6 @@ bool UMission::mission4(int &state)
     //
     // go to wait for finished
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -656,7 +652,6 @@ bool UMission::mission5(int &state)
     //
     // go to wait for finished
     state = 999;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -678,7 +673,7 @@ bool UMission::mission5(int &state)
 
 /**
  * Run mission
- * 
+ * THE TUNNEL
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -709,7 +704,6 @@ bool UMission::mission6(int &state)
     //
     // go to wait for finished
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
     // wait for event 1 (send when finished driving first part)
@@ -731,7 +725,7 @@ bool UMission::mission6(int &state)
 
 /**
  * Run mission
- * 
+ * THE ROUNDABOUT
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -744,6 +738,13 @@ bool UMission::mission7(int &state)
   switch (state)
   {
   case 0:
+    // tell the operatior what to do
+      printf("# started mission 7: Roundabout.\n");
+      system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+      bridge->send("oled 5 looking 4 robot");
+      state=10;
+      break;
+  case 10:
     int line = 0;
     // yolo
     snprintf(lines[line++], MAX_LEN, "vel=0");
