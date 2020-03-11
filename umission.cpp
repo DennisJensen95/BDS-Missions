@@ -746,8 +746,20 @@ bool UMission::mission7(int &state)
       break;
   case 10:
     int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
+    // drive until line leading to Orsted
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edger=1, white=1: xl>10");
+    // continue for 80 cm
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edgel=0, white=1: dist=0.8");
+    // stop until regbot is detected
+    snprintf(lines[line++], MAX_LEN, "vel=0: ir2 < 0.3");
+    // drive towards line
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: xl>10");
+    // back up a bit
+    snprintf(lines[line++], MAX_LEN, "vel=-0.2: dist=0.2");
+    // turn left onto line
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
+    // find line
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=0, white=1: time=2");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -761,11 +773,71 @@ bool UMission::mission7(int &state)
     system("espeak \"code snippet 7.\" -ven+f4 -s130 -a5 2>/dev/null &");
     bridge->send("oled 5 code snippet 7");
     //
-    // go to wait for finished
+    // go to wait for finished event 1
     state = 11;
-    featureCnt = 0;
     break;
   case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 21;
+    }
+    break;
+  case 21:
+    int line = 0;
+    // continue along the line until the line is reached OR robot is seen
+    // first drive a bit in case the front sensor just sees the gate
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: xl>10, dist=0.1");
+    // then continue driving
+    snprintf(lines[line++], MAX_LEN, ": xl>10, event=3");
+    // create event 2
+    snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    sendAndActivateSnippet(lines, line);
+    // make sure event 2 is cleared
+    bridge->event->isEventSet(2);
+    //
+    state = 22;
+    break;
+  case 22:
+    if(bridge->irdist->dist[1] < 0.15){
+      int line = 0;
+      // create event 3
+      snprintf(lines[line++], MAX_LEN, "event=3");
+      // add a line, so that the robot is occupied until next snippet has arrived
+      snprintf(lines[line++], MAX_LEN, ": dist=1");
+      sendAndActivateSnippet(lines, line);
+      // make sure event 3 is cleared
+      bridge->event->isEventSet(3);
+    }
+    //
+    if(bridge->event->isEventSet(2)){
+      state = 21;
+    }
+    //
+    if(bridge->event->isEventSet(2) and not bridge->event->isEventSet(3)){
+      state = 31;
+    }
+    break;
+  case 31: //robot has reached the first line
+    int line = 0;
+    //TEST -> turn robot left and exit roundabout
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
+    // drive a bit
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: dist=0.3");
+    // create event 1
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    //
+    // go wait for finished
+    state = 99;
+  case 99:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
     { // finished first drive
