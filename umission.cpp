@@ -379,19 +379,21 @@ bool UMission::mission1(int &state)
     if (bridge->joy->button[BUTTON_GREEN])
       state = 10;
     break;
-  case 10: // follow black line for 0.5 m at a lower velocity
-    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=1");
+  case 10:
+    int line = 0;
+    // follow black line for 0.5 m at a lower velocity
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=1");
     // increase velocity and follow line until right IR sensor detects the guillotine gate
     // gates are 45 cm wide and robot is approx 32 cm wide giving ~7 cm on either side
-    snprintf(lines[1], MAX_LEN, "vel=0.6, acc=1, edgel=-1, white=1 : ir1 < 0.15");
+    snprintf(lines[line++], MAX_LEN, "vel=0.6, acc=1, edgel=-1, white=1 : ir1 < 0.15");
     //drive 25 cm to steer clear of the gate
-    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=0 : dist=0.20");
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=0 : dist=0.20");
     // stop and create an event when arrived at this point
-    snprintf(lines[3], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[4], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 4 lines to the REGBOT
-    sendAndActivateSnippet(lines, 5);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -436,22 +438,23 @@ bool UMission::mission2(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // continue driving along the line until the first gate is found
-    snprintf(lines[0], MAX_LEN, "vel=0.5, acc=1.0, edgel=1.0, white=1: ir1<0.15");
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1.0, edgel=1.0, white=1: ir1<0.15");
     // drive slowly towards the intersection
-    snprintf(lines[1], MAX_LEN, "vel=0.2,edgel=1,white=1: xl>6");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2,edgel=1,white=1: xl>6");
     // pause
-    snprintf(lines[2], MAX_LEN, "vel=0: time=0.5");
+    snprintf(lines[line++], MAX_LEN, "vel=0: time=0.5");
     // turn left onto see saw
-    snprintf(lines[3], MAX_LEN, "vel=0.2, acc=0.5, tr=0.01: turn=90.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.01: turn=90.0");
     // pause
-    snprintf(lines[4], MAX_LEN, "vel=0: time=0.5");
+    snprintf(lines[line++], MAX_LEN, "vel=0: time=0.5");
     // create event 1
-    snprintf(lines[5], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[6], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 7);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -496,18 +499,19 @@ bool UMission::mission3(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // drive slowly until the gate at the end of the see saw is reached
-    snprintf(lines[0], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
+    snprintf(lines[line++], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
     // pause after reaching the ground
-    snprintf(lines[1], MAX_LEN, "vel=0.0: time=2.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0: time=2.0");
     // drive away from see saw
-    snprintf(lines[2], MAX_LEN, "vel=0.3: dist=0.6");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3: dist=0.6");
     // create event 1
-    snprintf(lines[3], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[4], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 5);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -552,29 +556,30 @@ bool UMission::mission4(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // turn right 90 degrees (turn radius of 10 cm to clear the see saw)
-    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=0.5, tr=0.1: turn=-90.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.1: turn=-90.0");
     // pause half a second, adjust heading
-    snprintf(lines[1], MAX_LEN, "vel=0.0, head=0: time=0.5");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0, head=0: time=0.5");
     // drive fast towards first line by stairs
-    snprintf(lines[2], MAX_LEN, "vel=0.6: xl>10");
+    snprintf(lines[line++], MAX_LEN, "vel=0.6: xl>10");
     // drive slow towards second line of tape
-    snprintf(lines[3], MAX_LEN, "vel=0.3: dist=0.1");
-    snprintf(lines[4], MAX_LEN, "vel=0.2: xl>10");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3: dist=0.1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2: xl>10");
     // turn right onto line
-    snprintf(lines[5], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
     // follow line slowly to adjust
-    snprintf(lines[6], MAX_LEN, "vel=0.2, acc=1.0, edger=0.0, white=1: dist=0.4");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1.0, edger=0.0, white=1: dist=0.4");
     // increase speed 
-    snprintf(lines[7], MAX_LEN, "vel=0.5, edger=0.0, white=1: dist=3.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, edger=0.0, white=1: dist=3.0");
     // turn right to face stairs
-    snprintf(lines[8], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
     // create event 1
-    snprintf(lines[9], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[10], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 11);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -619,28 +624,29 @@ bool UMission::mission5(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // drive slowly until the gate at the top of stairs is reached
-    snprintf(lines[0], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
+    snprintf(lines[line++], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
     // pause 
-    snprintf(lines[1], MAX_LEN, "vel=0.0: time=1.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0: time=1.0");
     // drive slowly until the gate at the top of stairs is reached
-    snprintf(lines[2], MAX_LEN, "vel=0.15, edger=0.0, white=1: ir1<0.15");
+    snprintf(lines[line++], MAX_LEN, "vel=0.15, edger=0.0, white=1: ir1<0.15");
     // pause 
-    snprintf(lines[3], MAX_LEN, "vel=0.0: time=1.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0: time=1.0");
     // continue driving carefully
-    snprintf(lines[4], MAX_LEN, "vel=0.15, edger=0.0, white=1: dist=0.5");
+    snprintf(lines[line++], MAX_LEN, "vel=0.15, edger=0.0, white=1: dist=0.5");
     // continue until line is reached
-    snprintf(lines[5], MAX_LEN, "vel=0.4, white=1: xl>12");
+    snprintf(lines[line++], MAX_LEN, "vel=0.4, white=1: xl>12");
     // back up slightly
-    snprintf(lines[6], MAX_LEN, "vel=-0.2: dist=0.2");
+    snprintf(lines[line++], MAX_LEN, "vel=-0.2: dist=0.2");
     // turn left onto line
-    snprintf(lines[7], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
     // create event 1
-    snprintf(lines[8], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[9], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 10);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
