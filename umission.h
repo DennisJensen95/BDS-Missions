@@ -122,6 +122,11 @@ private:
   bool mission3(int & state);
   bool mission4(int & state);
   bool mission5(int & state);
+  bool mission6(int & state);
+  bool mission7(int & state);
+  bool mission8(int & state);
+  bool mission9(int & state);
+  bool mission10(int & state);
   
   
   

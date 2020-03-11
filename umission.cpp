@@ -255,6 +255,24 @@ void UMission::runMission()
         case 4:
           ended = mission4(missionState);
           break;
+        case 5:
+          ended = mission5(missionState);
+          break;
+        case 6:
+          ended = mission6(missionState);
+          break;
+        case 7:
+          ended = mission7(missionState);
+          break;
+        case 8:
+          ended = mission8(missionState);
+          break;
+        case 9:
+          ended = mission9(missionState);
+          break;
+        case 10:
+          ended = mission10(missionState);
+          break;
         default:
           // no more missions - end everything
           finished = true;
@@ -335,6 +353,7 @@ void UMission::runMission()
 
 /**
  * Run mission
+ * GUILLOTINE
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -404,6 +423,7 @@ bool UMission::mission1(int &state)
 
 /**
  * Run mission
+ * THE RAMP PART 1
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -422,7 +442,7 @@ bool UMission::mission2(int &state)
     snprintf(lines[1], MAX_LEN, "vel=0.2,edgel=1,white=1: xl>6");
     // pause
     snprintf(lines[2], MAX_LEN, "vel=0: time=0.5");
-    // turn onto see saw
+    // turn left onto see saw
     snprintf(lines[3], MAX_LEN, "vel=0.2, acc=0.5, tr=0.01: turn=90.0");
     // pause
     snprintf(lines[4], MAX_LEN, "vel=0: time=0.5");
@@ -463,6 +483,7 @@ bool UMission::mission2(int &state)
 
 /**
  * Run mission
+ * THE SEE SAW
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -516,6 +537,314 @@ bool UMission::mission3(int &state)
 }
 
 
+/**
+ * Run mission
+ * THE RAMP PART 2 **NOT TESTED**
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission4(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    // turn right 90 degrees (turn radius of 10 cm to clear the see saw)
+    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=0.5, tr=0.1: turn=-90.0");
+    // pause half a second, adjust heading
+    snprintf(lines[1], MAX_LEN, "vel=0.0, head=0: time=0.5");
+    // drive fast towards first line by stairs
+    snprintf(lines[2], MAX_LEN, "vel=0.6: xl>10");
+    // drive slow towards second line of tape
+    snprintf(lines[3], MAX_LEN, "vel=0.3: dist=0.1");
+    snprintf(lines[4], MAX_LEN, "vel=0.2: xl>10");
+    // turn right onto line
+    snprintf(lines[5], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
+    // follow line slowly to adjust
+    snprintf(lines[6], MAX_LEN, "vel=0.2, acc=1.0, edger=0.0, white=1: dist=0.4");
+    // increase speed 
+    snprintf(lines[7], MAX_LEN, "vel=0.5, edger=0.0, white=1: dist=3.0");
+    // turn right to face stairs
+    snprintf(lines[8], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
+    // create event 1
+    snprintf(lines[9], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[10], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 11);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 3\n", state);
+    system("espeak \"code snippet 3.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 3");
+    //
+    // go to wait for finished
+    state = 11;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 4 ended \n");
+    bridge->send("oled 5 \"mission 4 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+
+/**
+ * Run mission
+ * THE STAIRS
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission5(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    // drive slowly until the gate at the top of stairs is reached
+    snprintf(lines[0], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
+    // pause 
+    snprintf(lines[1], MAX_LEN, "vel=0.0: time=1.0");
+    // drive slowly until the gate at the top of stairs is reached
+    snprintf(lines[2], MAX_LEN, "vel=0.15, edger=0.0, white=1: ir1<0.15");
+    // pause 
+    snprintf(lines[3], MAX_LEN, "vel=0.0: time=1.0");
+    // continue driving carefully
+    snprintf(lines[4], MAX_LEN, "vel=0.15, edger=0.0, white=1: dist=0.5");
+    // continue until line is reached
+    snprintf(lines[5], MAX_LEN, "vel=0.4, white=1: xl>12");
+    // back up slightly
+    snprintf(lines[6], MAX_LEN, "vel=-0.2: dist=0.2");
+    // turn left onto line
+    snprintf(lines[7], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
+    // create event 1
+    snprintf(lines[8], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[9], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 10);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 3\n", state);
+    system("espeak \"code snippet 3.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 3");
+    //
+    // go to wait for finished
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 5 ended \n");
+    bridge->send("oled 5 \"mission 5 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+
+/**
+ * Run mission
+ * 
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission6(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 6 ended \n");
+    bridge->send("oled 5 \"mission 6 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+
+/**
+ * Run mission
+ * 
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission7(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 7 ended \n");
+    bridge->send("oled 5 \"mission 7 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+/**
+ * Run mission
+ * 
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission8(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 8 ended \n");
+    bridge->send("oled 5 \"mission 8 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+/**
+ * Run mission
+ * 
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission9(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 9 ended \n");
+    bridge->send("oled 5 \"mission 9 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
+
+/**
+ * Run mission
+ * 
+ * \param state is kept by caller, but is changed here
+ *              therefore defined as reference with the '&'.
+ *              State will be 0 at first call.
+ * \returns true, when finished. */
+bool UMission::mission10(int &state)
+{
+  bool finished = false;
+  // First commands to send to robobot in given mission
+  // (robot sends event 1 after driving 1 meter)):
+  switch (state)
+  {
+  case 0:
+    state = 999;
+    featureCnt = 0;
+    break;
+  case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 999;
+    }
+    break;
+  case 999:
+  default:
+    printf("mission 10 ended \n");
+    bridge->send("oled 5 \"mission 10 ended.\"");
+    finished = true;
+    break;
+  }
+  return finished;
+}
 
 void UMission::openLog()
 {
