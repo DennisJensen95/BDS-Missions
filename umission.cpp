@@ -578,9 +578,9 @@ bool UMission::mission4(int &state)
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d sent mission snippet 3\n", state);
-    system("espeak \"code snippet 3.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 3");
+    printf("# case=%d sent mission snippet 4\n", state);
+    system("espeak \"code snippet 4.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 4");
     //
     // go to wait for finished
     state = 11;
@@ -644,9 +644,9 @@ bool UMission::mission5(int &state)
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d sent mission snippet 3\n", state);
-    system("espeak \"code snippet 3.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 3");
+    printf("# case=%d sent mission snippet 5\n", state);
+    system("espeak \"code snippet 5.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 5");
     //
     // go to wait for finished
     state = 999;
@@ -685,7 +685,23 @@ bool UMission::mission6(int &state)
   switch (state)
   {
   case 0:
-    state = 999;
+    // yolo
+    snprintf(lines[0], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[2], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 6\n", state);
+    system("espeak \"code snippet 6.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 6");
+    //
+    // go to wait for finished
+    state = 11;
     featureCnt = 0;
     break;
   case 11:
@@ -721,7 +737,23 @@ bool UMission::mission7(int &state)
   switch (state)
   {
   case 0:
-    state = 999;
+    // yolo
+    snprintf(lines[0], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[2], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 7\n", state);
+    system("espeak \"code snippet 7.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 7");
+    //
+    // go to wait for finished
+    state = 11;
     featureCnt = 0;
     break;
   case 11:
@@ -756,7 +788,23 @@ bool UMission::mission8(int &state)
   switch (state)
   {
   case 0:
-    state = 999;
+    // yolo
+    snprintf(lines[0], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[2], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 8\n", state);
+    system("espeak \"code snippet 8.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 8");
+    //
+    // go to wait for finished
+    state = 11;
     featureCnt = 0;
     break;
   case 11:
@@ -791,7 +839,23 @@ bool UMission::mission9(int &state)
   switch (state)
   {
   case 0:
-    state = 999;
+    // yolo
+    snprintf(lines[0], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[2], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 9\n", state);
+    system("espeak \"code snippet 9.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 9");
+    //
+    // go to wait for finished
+    state = 11;
     featureCnt = 0;
     break;
   case 11:
@@ -826,7 +890,23 @@ bool UMission::mission10(int &state)
   switch (state)
   {
   case 0:
-    state = 999;
+    // yolo
+    snprintf(lines[0], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[2], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 10\n", state);
+    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 10");
+    //
+    // go to wait for finished
+    state = 11;
     featureCnt = 0;
     break;
   case 11:
