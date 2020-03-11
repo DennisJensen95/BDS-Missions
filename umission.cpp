@@ -691,14 +691,15 @@ bool UMission::mission6(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // yolo
-    snprintf(lines[0], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0");
     // create event 1
-    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[2], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 3);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -743,14 +744,15 @@ bool UMission::mission7(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // yolo
-    snprintf(lines[0], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0");
     // create event 1
-    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[2], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 3);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -794,14 +796,15 @@ bool UMission::mission8(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // yolo
-    snprintf(lines[0], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0");
     // create event 1
-    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[2], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 3);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -845,14 +848,15 @@ bool UMission::mission9(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // yolo
-    snprintf(lines[0], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0");
     // create event 1
-    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[2], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 3);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
@@ -896,14 +900,15 @@ bool UMission::mission10(int &state)
   switch (state)
   {
   case 0:
+    int line = 0;
     // yolo
-    snprintf(lines[0], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0");
     // create event 1
-    snprintf(lines[1], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[2], MAX_LEN, ": dist=1");
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, 3);
+    sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
