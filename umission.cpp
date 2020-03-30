@@ -380,6 +380,7 @@ bool UMission::mission1(int &state)
       state = 10;
     break;
   case 10:
+  {
     int line = 0;
     // follow black line for 0.5 m at a lower velocity
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=1");
@@ -404,7 +405,9 @@ bool UMission::mission1(int &state)
     // go to wait for finished
     state = 11;
     break;
+  }
   case 11:
+
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
     { // finished first drive
@@ -421,7 +424,6 @@ bool UMission::mission1(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE RAMP PART 1
@@ -437,6 +439,7 @@ bool UMission::mission2(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // continue driving along the line until the first gate is found
     snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1.0, edgel=1.0, white=1: ir1<0.15");
@@ -464,6 +467,7 @@ bool UMission::mission2(int &state)
     // go to wait for finished
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -481,7 +485,6 @@ bool UMission::mission2(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE SEE SAW
@@ -497,6 +500,7 @@ bool UMission::mission3(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // drive slowly until the gate at the end of the see saw is reached
     snprintf(lines[line++], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
@@ -520,6 +524,7 @@ bool UMission::mission3(int &state)
     // go to wait for finished
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -537,7 +542,6 @@ bool UMission::mission3(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE RAMP PART 2 **NOT TESTED**
@@ -553,6 +557,7 @@ bool UMission::mission4(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // turn right 90 degrees (turn radius of 10 cm to clear the see saw)
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.1: turn=-90.0");
@@ -567,7 +572,7 @@ bool UMission::mission4(int &state)
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
     // follow line slowly to adjust
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1.0, edger=0.0, white=1: dist=0.4");
-    // increase speed 
+    // increase speed
     snprintf(lines[line++], MAX_LEN, "vel=0.5, edger=0.0, white=1: dist=3.0");
     // turn right to face stairs
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
@@ -587,6 +592,7 @@ bool UMission::mission4(int &state)
     // go to wait for finished
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -604,7 +610,6 @@ bool UMission::mission4(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE STAIRS
@@ -620,14 +625,15 @@ bool UMission::mission5(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // drive slowly until the gate at the top of stairs is reached
     snprintf(lines[line++], MAX_LEN, "vel=0.15, acc=1.0, edger=0.0, white=1: ir1<0.15");
-    // pause 
+    // pause
     snprintf(lines[line++], MAX_LEN, "vel=0.0: time=1.0");
     // drive slowly until the gate at the top of stairs is reached
     snprintf(lines[line++], MAX_LEN, "vel=0.15, edger=0.0, white=1: ir1<0.15");
-    // pause 
+    // pause
     snprintf(lines[line++], MAX_LEN, "vel=0.0: time=1.0");
     // continue driving carefully
     snprintf(lines[line++], MAX_LEN, "vel=0.15, edger=0.0, white=1: dist=0.5");
@@ -653,6 +659,7 @@ bool UMission::mission5(int &state)
     // go to wait for finished
     state = 999;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -670,7 +677,6 @@ bool UMission::mission5(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE TUNNEL
@@ -686,6 +692,7 @@ bool UMission::mission6(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // yolo
     snprintf(lines[line++], MAX_LEN, "vel=0");
@@ -705,6 +712,7 @@ bool UMission::mission6(int &state)
     // go to wait for finished
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -722,7 +730,6 @@ bool UMission::mission6(int &state)
   return finished;
 }
 
-
 /**
  * Run mission
  * THE ROUNDABOUT
@@ -739,12 +746,13 @@ bool UMission::mission7(int &state)
   {
   case 0:
     // tell the operatior what to do
-      printf("# started mission 7: Roundabout.\n");
-      system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
-      bridge->send("oled 5 looking 4 robot");
-      state=10;
-      break;
+    printf("# started mission 7: Roundabout.\n");
+    system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 looking 4 robot");
+    state = 10;
+    break;
   case 10:
+  {
     int line = 0;
     // drive until line leading to Orsted
     snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edger=1, white=1: xl>10");
@@ -776,6 +784,7 @@ bool UMission::mission7(int &state)
     // go to wait for finished event 1
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -784,6 +793,7 @@ bool UMission::mission7(int &state)
     }
     break;
   case 21:
+  {
     int line = 0;
     // continue along the line until the line is reached OR robot is seen
     // first drive a bit in case the front sensor just sees the gate
@@ -800,8 +810,10 @@ bool UMission::mission7(int &state)
     //
     state = 22;
     break;
+  }
   case 22:
-    if(bridge->irdist->dist[1] < 0.15){
+    if (bridge->irdist->dist[1] < 0.15)
+    {
       int line = 0;
       // create event 3
       snprintf(lines[line++], MAX_LEN, "event=3");
@@ -810,17 +822,16 @@ bool UMission::mission7(int &state)
       sendAndActivateSnippet(lines, line);
       // make sure event 3 is cleared
       bridge->event->isEventSet(3);
-    }
-    //
-    if(bridge->event->isEventSet(2)){
-      state = 21;
-    }
-    //
-    if(bridge->event->isEventSet(2) and not bridge->event->isEventSet(3)){
+
       state = 31;
+    }
+    else
+    {
+      state = 21;
     }
     break;
   case 31: //robot has reached the first line
+  {
     int line = 0;
     //TEST -> turn robot left and exit roundabout
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
@@ -837,6 +848,7 @@ bool UMission::mission7(int &state)
     //
     // go wait for finished
     state = 99;
+  }
   case 99:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -869,6 +881,7 @@ bool UMission::mission8(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // yolo
     snprintf(lines[line++], MAX_LEN, "vel=0");
@@ -889,6 +902,7 @@ bool UMission::mission8(int &state)
     state = 11;
     featureCnt = 0;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -921,6 +935,7 @@ bool UMission::mission9(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // yolo
     snprintf(lines[line++], MAX_LEN, "vel=0");
@@ -941,6 +956,7 @@ bool UMission::mission9(int &state)
     state = 11;
     featureCnt = 0;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -973,6 +989,7 @@ bool UMission::mission10(int &state)
   switch (state)
   {
   case 0:
+  {
     int line = 0;
     // yolo
     snprintf(lines[line++], MAX_LEN, "vel=0");
@@ -993,6 +1010,7 @@ bool UMission::mission10(int &state)
     state = 11;
     featureCnt = 0;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))

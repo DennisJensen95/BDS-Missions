@@ -37,8 +37,7 @@
 #include "utime.h"
 #include "ucamera.h"
 
-
-using namespace std; 
+using namespace std;
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -46,19 +45,17 @@ using namespace std;
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-
 cv::Mat ArUcoVal::makeMarkerToCam4x4matrix(cv::Vec3f rVec, cv::Vec3f tVec)
 {
   cv::Mat R, camH;
-  Rodrigues(rVec,R); 		 				                // 3 cols, 3 rows
-  cv::Mat col = cv::Mat(tVec);  	              // 1 cols, 3 rows
-  hconcat(R, col, camH);                        // 4 cols, 3 rows
-  float tempRow[4] = {0,0,0,1};
+  Rodrigues(rVec, R);          // 3 cols, 3 rows
+  cv::Mat col = cv::Mat(tVec); // 1 cols, 3 rows
+  hconcat(R, col, camH);       // 4 cols, 3 rows
+  float tempRow[4] = {0, 0, 0, 1};
   cv::Mat row = cv::Mat(1, 4, CV_32F, tempRow); // 4 cols, 1 row
-  camH.push_back(row); // 4 cols, 4 rows
-  return camH; // 4 cols, 4 rows
+  camH.push_back(row);                          // 4 cols, 4 rows
+  return camH;                                  // 4 cols, 4 rows
 }
-
 
 ////////////////////////////////////////////////////
 
@@ -70,68 +67,73 @@ void ArUcoVal::markerToRobotCoordinate(cv::Mat cam2robot)
   //
   if (false)
   { // print matrices - for debug
-    cout << "ID "  << markerId << " marker2cam \n" << marker2Cam << "\n";
-    cout << "ID "  << markerId << " cam2robot \n" << cam2robot << "\n";
-    cout << "ID "  << markerId << " marker2robot \n" << marker2robot << "\n";
+    cout << "ID " << markerId << " marker2cam \n"
+         << marker2Cam << "\n";
+    cout << "ID " << markerId << " cam2robot \n"
+         << cam2robot << "\n";
+    cout << "ID " << markerId << " marker2robot \n"
+         << marker2robot << "\n";
   }
-  // get position of marker center 
-  cv::Vec4f zeroVec = {0,0,0,1};
+  // get position of marker center
+  cv::Vec4f zeroVec = {0, 0, 0, 1};
   markerPosition = marker2robot * cv::Mat(zeroVec);
   // get position of 10cm in z-marker direction - out from marker
-  cv::Vec4f zeroVecZ = {0,0,0.1,1};
+  cv::Vec4f zeroVecZ = {0, 0, 0.1, 1};
   cv::Mat marker10cmVecZ = marker2robot * cv::Mat(zeroVecZ);
   // get marker z-vector (in robot coordinate system)
   cv::Mat dz10cm = marker10cmVecZ - markerPosition;
   if (false)
   { // debug
-    cout << "ID " << markerId << " 0,0,0 \n" << markerPosition <<"\n";
-    cout << "ID " << markerId << " 10cmZ \n" << dz10cm <<"\n";
+    cout << "ID " << markerId << " 0,0,0 \n"
+         << markerPosition << "\n";
+    cout << "ID " << markerId << " 10cmZ \n"
+         << dz10cm << "\n";
   }
   // if marker z-axis extends (most) in the robot Z dimension, then the marker is not vertical
-  markerVertical = dz10cm.at<float>(0,2) < 0.0707; // 10cm marker angle 45 deg
+  markerVertical = dz10cm.at<float>(0, 2) < 0.0707; // 10cm marker angle 45 deg
   if (markerVertical)
   { // marker mostly vertical
     // rotation of marker Z vector in robot coordinates around robot Z axis
-    markerAngle = atan2(-dz10cm.at<float>(0,1), -dz10cm.at<float>(0,0));
+    markerAngle = atan2(-dz10cm.at<float>(0, 1), -dz10cm.at<float>(0, 0));
   }
   else
   { // then mostly horizontal
-//     printf("# marker horizontal - orientation of marker Y is used\n");
-    cv::Vec4f zeroVecY = {0,0.1,0,1};
+    //     printf("# marker horizontal - orientation of marker Y is used\n");
+    cv::Vec4f zeroVecY = {0, 0.1, 0, 1};
     cv::Mat marker10cmVecY = marker2robot * cv::Mat(zeroVecY);
     // get marker z-vector (in robot coordinate system)
     cv::Mat dy10cm = marker10cmVecY - markerPosition;
     if (false)
     { // debug
-      cout << "ID " << markerId << " 10cmY \n" << dz10cm <<" - marker horizontal\n";
+      cout << "ID " << markerId << " 10cmY \n"
+           << dz10cm << " - marker horizontal\n";
     }
     // rotation of marker Y vector in robot coordinates around robot Z axis
-    markerAngle = atan2(dy10cm.at<float>(0,1), dy10cm.at<float>(0,0));
+    markerAngle = atan2(dy10cm.at<float>(0, 1), dy10cm.at<float>(0, 0));
   }
   // in plane distance sqrt(x^2 + y^2) only - using hypot(x,y) function
-  distance2marker = hypotf(markerPosition.at<float>(0,0), markerPosition.at<float>(0,1));
+  distance2marker = hypotf(markerPosition.at<float>(0, 0), markerPosition.at<float>(0, 1));
   if (true)
   { // debug
-    printf("# ArUco ID %02d at(%.3fx, %.3fy, %.3fz) (robot coo), plane dist %.3fm, angle %.3f rad, or %.1f deg, vertical=%d\n", 
-           markerId, 
-           markerPosition.at<float>(0,0), markerPosition.at<float>(0,1), markerPosition.at<float>(0,2),
-           distance2marker, markerAngle, markerAngle*180/M_PI, markerVertical);
+    printf("# ArUco ID %02d at(%.3fx, %.3fy, %.3fz) (robot coo), plane dist %.3fm, angle %.3f rad, or %.1f deg, vertical=%d\n",
+           markerId,
+           markerPosition.at<float>(0, 0), markerPosition.at<float>(0, 1), markerPosition.at<float>(0, 2),
+           distance2marker, markerAngle, markerAngle * 180 / M_PI, markerVertical);
   }
 }
 
-
 void ArUcoVal::printStatus()
 {
-  printf("# ID=%3d, from frame %d, time %ld.%06ld, plane distance=%.3fm, angle=%.1f deg, vertical=%d, new=%d\n", 
-         markerId, 
-         frameNumber, imageTime.getSec(), imageTime.getMilisec(), 
-         distance2marker, 
-         markerAngle*180/M_PI, 
+  printf("# ID=%3d, from frame %d, time %ld.%06ld, plane distance=%.3fm, angle=%.1f deg, vertical=%d, new=%d\n",
+         markerId,
+         frameNumber, imageTime.getSec(), imageTime.getMilisec(),
+         distance2marker,
+         markerAngle * 180 / M_PI,
          markerVertical, isNew);
   printf("#         marker position (x,y,z) = (%6.2f, %6.2f, %6.2f) m (robot coo)\n",
-         markerPosition.at<float>(0,0), 
-         markerPosition.at<float>(0,1), 
-         markerPosition.at<float>(0,2));
+         markerPosition.at<float>(0, 0),
+         markerPosition.at<float>(0, 1),
+         markerPosition.at<float>(0, 2));
 }
 
 //////////////////////////////////////////////////
@@ -140,11 +142,10 @@ void ArUcoVal::printStatus()
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
-
 void ArUcoVals::printStatus()
 {
   printf("# ------- ArUco ------------\n");
-  ArUcoVal * v = NULL;
+  ArUcoVal *v = NULL;
   int cnt = 0;
   for (int i = 0; i < MAX_VAL_CNT; i++)
   {
@@ -163,9 +164,9 @@ void ArUcoVals::printStatus()
 
 //////////////////////////////////////////////////
 
-ArUcoVal * ArUcoVals::getID(int id)
+ArUcoVal *ArUcoVals::getID(int id)
 {
-  ArUcoVal * v = NULL;
+  ArUcoVal *v = NULL;
   if (id >= 0 and id < MAX_VAL_CNT)
     v = &arucos[id];
   return v;
@@ -173,9 +174,9 @@ ArUcoVal * ArUcoVals::getID(int id)
 
 //////////////////////////////////////////////////
 
-ArUcoVal * ArUcoVals::getFirstNew(int n)
+ArUcoVal *ArUcoVals::getFirstNew(int n)
 {
-  ArUcoVal * v = NULL;
+  ArUcoVal *v = NULL;
   for (int i = 0; i < MAX_VAL_CNT; i++)
   {
     v = getID(i);
@@ -194,7 +195,7 @@ ArUcoVal * ArUcoVals::getFirstNew(int n)
 
 int ArUcoVals::getMarkerCount(bool newOnly)
 {
-  ArUcoVal * v = NULL;
+  ArUcoVal *v = NULL;
   int n = 0;
   for (int i = 0; i < MAX_VAL_CNT; i++)
   {
@@ -222,7 +223,6 @@ void ArUcoVals::setNewFlagToFalse()
     arucos[i].isNew = false;
   }
 }
-
 
 void ArUcoVals::openArucoLog()
 {
@@ -271,12 +271,12 @@ void ArUcoVals::closeArucoLog()
 int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
   cv::Mat frameAnn;
-  const float arucoSqaureDimensions = 0.100;      //meters
+  const float arucoSqaureDimensions = 0.100; //meters
   vector<int> markerIds;
   vector<vector<cv::Point2f>> markerCorners; //, rejectedcandidates;
   cv::aruco::DetectorParameters parameters;
   //seach DICT on docs.opencv.org
-  cv::Ptr < cv::aruco::Dictionary> markerDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_100); 
+  cv::Ptr<cv::aruco::Dictionary> markerDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_100);
   // marker position info
   vector<cv::Vec3d> rotationVectors, translationVectors;
   UTime t; // timing calculation (for log)
@@ -295,22 +295,22 @@ int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
       frame.copyTo(frameAnn);
       cv::aruco::drawDetectedMarkers(frameAnn, markerCorners, markerIds);
     }
-    // 
-    cv::aruco::estimatePoseSingleMarkers(markerCorners, 
-                                         arucoSqaureDimensions, 
-                                         cam->cameraMatrix, 
-                                         cam->distortionCoefficients, 
-                                         rotationVectors, 
+    //
+    cv::aruco::estimatePoseSingleMarkers(markerCorners,
+                                         arucoSqaureDimensions,
+                                         cam->cameraMatrix,
+                                         cam->distortionCoefficients,
+                                         rotationVectors,
                                          translationVectors);
   }
   else
     printf("# No markers found\n");
   // extract markers
   int i = 0;
-  for(unsigned int j = 0; j < markerIds.size(); j++)
+  for (unsigned int j = 0; j < markerIds.size(); j++)
   { // for all detected markers in this frame
     i = markerIds[j];
-    ArUcoVal * v = getID(i);
+    ArUcoVal *v = getID(i);
     if (v != NULL)
     { // save marker info and do coordinate conversion for marker
       v->lock.lock();
@@ -323,7 +323,7 @@ int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
       v->tVec = translationVectors[j];
       //
       if (debugImages)
-      { // show detected orientation in image X:red, Y:green, Z:blue.
+      {                                                                                                         // show detected orientation in image X:red, Y:green, Z:blue.
         cv::aruco::drawAxis(frameAnn, cam->cameraMatrix, cam->distortionCoefficients, v->rVec, v->tVec, 0.03f); //X:red, Y:green, Z:blue.
       }
       //
@@ -331,7 +331,7 @@ int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
       v->isNew = true;
       v->lock.unlock();
       //       v->done = true;
-//       printf("# debug images = %d, logArUco = %d\n", debugImages, logArUco != NULL);
+      //       printf("# debug images = %d, logArUco = %d\n", debugImages, logArUco != NULL);
       // maybe also log of data
       if (logArUco != NULL)
       {
@@ -345,12 +345,11 @@ int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
          *      fprintf(logArUco, "%% 8   Distance to marker [m]\n");
          *      fprintf(logArUco, "%% 9   Marker angle [radians] - assumed vertical marker.\n");
          * */
-        fprintf(logArUco, "%ld.%03ld %d %d %.3f %.3f %.3f  %.3f %.4f %d %.3f\n", imTime.getSec(), imTime.getMilisec(), 
-                v->frameNumber, 
+        fprintf(logArUco, "%ld.%03ld %d %d %.3f %.3f %.3f  %.3f %.4f %d %.3f\n", imTime.getSec(), imTime.getMilisec(),
+                v->frameNumber,
                 v->markerId,
-                v->markerPosition.at<float>(0,0), v->markerPosition.at<float>(0,1), v->markerPosition.at<float>(0,2),
-                v->distance2marker, v->markerAngle, v->markerVertical, t.getTimePassed()
-               );
+                v->markerPosition.at<float>(0, 0), v->markerPosition.at<float>(0, 1), v->markerPosition.at<float>(0, 2),
+                v->distance2marker, v->markerAngle, v->markerVertical, t.getTimePassed());
       }
     }
   }
@@ -366,7 +365,7 @@ void ArUcoVals::setPoseAtImageTime(float x, float y, float_t h)
 {
   for (int i = 0; i < MAX_VAL_CNT; i++)
   {
-    ArUcoVal * v = &arucos[i];
+    ArUcoVal *v = &arucos[i];
     if (v->isNew)
       v->robotPose.set(x, y, h);
   }
