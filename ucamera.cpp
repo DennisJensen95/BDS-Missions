@@ -271,9 +271,10 @@ void UCamera::run()
         if (doFindBall)
         {
           // Test code
-          printf("Doing find ball detection");
+          printf("Doing find ball detection...\n");
           double test = 120.0;
-          findBalls->deg2rad(test);
+          test = findBalls->deg2rad(test);
+          printf("Angle: %.2f\n", test);
         }
       }
     }
