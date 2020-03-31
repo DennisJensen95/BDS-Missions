@@ -364,14 +364,14 @@ bool UMission::mission1(int & state)
   // (robot sends event 1 after driving 1 meter)):
   switch (state)
   {
-    case 0:
+    case 0: // start
       // tell the operatior what to do
       printf("# started mission 1.\n");
       system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &"); 
       bridge->send("oled 5 looking 4 ball");
       state=11;
       break;
-    case 11:
+    case 11: // start ball analysis
     {
       // wait for finished driving first part)
       if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2*180/M_PI))
@@ -382,13 +382,13 @@ bool UMission::mission1(int & state)
         // start ball analysis 
         printf("# started new ball analysis\n");
         cam->doFindBall = true;
-      } else{
+      } /*else{
         printf("Motor still running!\n");
         usleep(35000);
-      }
+      }*/
       break;
     }
-    case 12:
+    case 12: // check if ball is found
       if (not cam->doFindBall)
       { // ball processing finished
         if (cam->ballFound > 0)
@@ -406,12 +406,12 @@ bool UMission::mission1(int & state)
         }
       }
       break;
-    case 20:
+    case 20: // adjust position and go back
     {
       state = 11;
       break;
     }
-    case 30:
+    case 30: // move to ball
     {
       int line = 0;
       // yolo
@@ -431,14 +431,14 @@ bool UMission::mission1(int & state)
       state = 31;
       break;
     }
-    case 31:
+    case 31: // check if movement is finished
       // wait for event 2 (send when finished driving)
       if (bridge->event->isEventSet(2))
       { // stop
         state = 999;
       }
       break;
-    case 999:
+    case 999: // end
     default:
       printf("mission 1 ended \n");
       bridge->send("oled 5 \"mission 1 ended.\"");
