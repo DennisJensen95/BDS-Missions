@@ -87,6 +87,7 @@ public:
     inline double deg2rad(double a) { return a / 180 * M_PI; };
 
     void setPoseAtImageTime(float x, float y, float_t h);
+
 };
 
 #endif

@@ -214,6 +214,7 @@ void UCamera::run()
   doArUcoAnalysis = false;
   doArUcoLoopTest = false;
   doFindBall = false;
+  ballFound = 0;
   int arucoLoop = 100;
   while (not th1stop)
   {
@@ -272,9 +273,13 @@ void UCamera::run()
         {
           // Test code
           printf("Doing find ball detection...\n");
-          double test = 120.0;
+          /*double test = 120.0;
           test = findBalls->deg2rad(test);
-          printf("Angle: %.2f\n", test);
+          printf("Angle: %.2f\n", test);*/
+
+          ballFound = findBalls->doFindBallProcessing(im, imageNumber, imTime);
+          printf("ballFound = %d\n", ballFound);
+          doFindBall = false;
         }
       }
     }

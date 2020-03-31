@@ -369,19 +369,72 @@ bool UMission::mission1(int & state)
       printf("# started mission 1.\n");
       system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &"); 
       bridge->send("oled 5 looking 4 ball");
-      state=30;
+      state=11;
       break;
-    case 30:
-      {
+    case 11:
+    {
+      // wait for finished driving first part)
+      if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2*180/M_PI))
+      { // finished first drive and turnrate is zero'ish
+        state = 12;
+        // wait further 30ms - about one camera frame at 30 FPS
+        usleep(35000);
+        // start ball analysis 
+        printf("# started new ball analysis\n");
         cam->doFindBall = true;
+      } else{
+        printf("Motor still running!\n");
+        usleep(35000);
       }
       break;
+    }
+    case 12:
+      if (not cam->doFindBall)
+      { // ball processing finished
+        if (cam->ballFound > 0)
+        { // found a single ball
+          state = 30;
+          // tell the operator
+          printf("# case=%d found ball\n", state);
+          system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+          bridge->send("oled 5 found ball");
+        }
+        else
+        { // yolo a bit more
+          printf("# case=%d NO ball found\n", state);
+          state = 20;
+        }
+      }
+      break;
+    case 20:
+    {
+      state = 11;
+      break;
+    }
+    case 30:
+    {
+      int line = 0;
+      // yolo
+      snprintf(lines[line++], MAX_LEN, "vel=0");
+      // create event 1
+      snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
+      // add a line, so that the robot is occupied until next snippet has arrived
+      snprintf(lines[line++], MAX_LEN, ": dist=1");
+      // send the 6 lines to the REGBOT
+      sendAndActivateSnippet(lines, line);
+      // make sure event 1 is cleared
+      bridge->event->isEventSet(2);
+      // tell the operator
+      printf("# case=%d sent mission snippet 1\n", state);
+      system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
+      bridge->send("oled 5 code snippet 1");
+      state = 31;
+      break;
+    }
     case 31:
       // wait for event 2 (send when finished driving)
       if (bridge->event->isEventSet(2))
-      { // look for next marker
-        state = 11;
-        // no, stop
+      { // stop
         state = 999;
       }
       break;
@@ -392,7 +445,6 @@ bool UMission::mission1(int & state)
       finished = true;
       break;
   }
-  // printf("# mission1 return (state=%d, finished=%d, )\n", state, finished);
   return finished;
 }
 
