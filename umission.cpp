@@ -401,7 +401,7 @@ bool UMission::mission1(int & state)
         }
         else
         { // yolo a bit more
-          printf("# case=%d NO ball found\n", state);
+          //printf("# case=%d NO ball found\n", state); //DEBUG
           state = 20;
         }
       }

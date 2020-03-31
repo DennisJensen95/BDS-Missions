@@ -49,7 +49,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         printf("Radius:\t\t\tr = %d pixels\n", r);
 
 
-
+        return 1;
     }
 
 /*

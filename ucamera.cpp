@@ -278,7 +278,7 @@ void UCamera::run()
           printf("Angle: %.2f\n", test);*/
 
           ballFound = findBalls->doFindBallProcessing(im, imageNumber, imTime);
-          printf("ballFound = %d\n", ballFound);
+          //printf("ballFound = %d\n", ballFound); //DEBUG
           doFindBall = false;
         }
       }
