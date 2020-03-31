@@ -24,6 +24,8 @@ using namespace std;
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
+    vector<vector<cv::Point2f>> ballCorners;
+    
     vector<cv::Vec3d> rotationVectors, translationVectors;
     UTime t;
     t.now();
@@ -46,7 +48,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         printf("x = %d, y = %d\n", x, y);
         printf("Radius:\t\t\tr = %d pixels\n", r);
 
-        
+
 
     }
 
