@@ -1,4 +1,4 @@
-/***************************************************************************
+ /***************************************************************************
  *   Copyright (C) 2016-2020 by DTU (Christian Andersen)                        *
  *   jca@elektro.dtu.dk                                                    *
  *                                                                         *
@@ -21,6 +21,7 @@
 #ifndef UMISSION_H
 #define UMISSION_H
 
+
 #include <sys/time.h>
 #include <cstdlib>
 #include <opencv2/opencv.hpp>
@@ -30,7 +31,8 @@
 #include "ujoy.h"
 #include "uplay.h"
 
-/*
+
+/**
  * Base class, that makes it easier to starta thread
  * from the method runObj
  * The run method should be overwritten in the real class */
@@ -39,14 +41,13 @@ class UMission : public URun
 public:
   /// flag to finish all (pending) missions and RC
   bool finished = false;
-
 private:
   /**
    * Pointer to communication and data part of this mission application */
-  UBridge *bridge;
+  UBridge * bridge;
   /**
    * Pointer to camera (class) of this mission application */
-  UCamera *cam;
+  UCamera * cam;
   /** is thread active */
   bool active = false;
   // thread on Regbot
@@ -58,20 +59,20 @@ private:
   /** definition of array with c-strings for the mission snippets */
   char lineBuffer[missionLineMax][MAX_LEN];
   /** an array of pointers to mission lines */
-  char *lines[missionLineMax];
+  char * lines[missionLineMax];
   /** logfile for mission state */
-  FILE *logMission = NULL;
-
+  FILE * logMission = NULL;
+  
 public:
   /**
    * Constructor */
-  UMission(UBridge *regbot, UCamera *camera);
+  UMission(UBridge * regbot, UCamera * camera);
   /**
    * Destructor */
   ~UMission();
   /**
    * Initialize regbot part to accept mission commands */
-  void missionInit();
+  void missionInit();  
   void openLog();
   void closeLog();
   inline bool logIsOpen() { return logMission != NULL; };
@@ -104,37 +105,33 @@ public:
   /**
    * Print status for mission */
   void printStatus();
-
+  
   /** which missions to run 
    * These values can be set as parameters, when starting the mission */
   int fromMission;
   int toMission;
   int mission;
   int missionState;
-
 private:
   /**
    * Mission parts
    * \param state is the current state of the mission
    * \return true, when missionpart is finished */
-  bool mission1(int &state);
-  bool mission2(int &state);
-  bool mission3(int &state);
-  bool mission4(int &state);
-  bool mission5(int &state);
-  bool mission6(int &state);
-  bool mission7(int &state);
-  bool mission8(int &state);
-  bool mission9(int &state);
-  bool mission10(int &state);
-
+  bool mission1(int & state);
+  bool mission2(int & state);
+  bool mission3(int & state);
+  bool mission4(int & state);
+  bool mission5(int & state);
+  
+  
+  
 private:
   /**
    * Send a number of lines to the REGBOT in a dormant thread, and 
    * make these lines (mission snippet) active - stopping the last set of lines.
    * \param missionLines is a pointer to an array of c-strings
    * \param missionLineCnt is the number of strings to be send from the missionLine array. */
-  void sendAndActivateSnippet(char *missionLines[], int missionLineCnt);
+  void sendAndActivateSnippet(char * missionLines[], int missionLineCnt);
   /**
    * Object to play a soundfile as we go */
   UPlay play;
@@ -142,5 +139,6 @@ private:
    * turn count, when looking for feature */
   int featureCnt;
 };
+
 
 #endif

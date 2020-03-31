@@ -56,7 +56,7 @@ using namespace std;
  * \var disteance2marker id the disteance from the robot to the marker in meters
  * \var angle2markerX and angle2markerY are the angle between the robot and the x or y axis of the mar frame respectetly 
  * */
-class ArUcoVal 
+class ArUcoVal
 {
 public:
   /// markerId is the ID of the marker ectracted from the parameter markerIds found på the cv::aruco::detectMarkers function

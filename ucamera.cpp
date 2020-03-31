@@ -36,7 +36,9 @@
 #include "ubridge.h"
 #include "utime.h"
 
-using namespace std;
+
+using namespace std; 
+
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -61,17 +63,18 @@ void UCamera::printStatus()
 {
   printf("# ------------ camera ------------\n");
   printf("# camera open=%d, frame number %d\n", cameraOpen, imageNumber);
-  printf("# focal length = %.0f pixels\n", cameraMatrix.at<double>(0, 0));
+  printf("# focal length = %.0f pixels\n", cameraMatrix.at<double>(0,0));
   printf("# Camera position (%.3fx, %.3fy, %.3fz) [m]\n", camPos[0], camPos[1], camPos[2]);
-  printf("# Camera rotation (%.1froll, %.1fpitch, %.1fpan) [degrees]\n",
-         camRot[0] * 180 / M_PI,
-         camRot[1] * 180 / M_PI,
+  printf("# Camera rotation (%.1froll, %.1fpitch, %.1fpan) [degrees]\n", 
+         camRot[0] * 180 / M_PI, 
+         camRot[1] * 180 / M_PI, 
          camRot[2] * 180 / M_PI);
-#ifdef raspicam_CV_LIBS
-  printf("# frame size (h,w)=(%g, %g), framerate %g/s\n",
-         camDev.get(CV_CAP_PROP_FRAME_HEIGHT),
+  #ifdef raspicam_CV_LIBS
+  printf("# frame size (h,w)=(%g, %g), framerate %g/s\n", 
+         camDev.get(CV_CAP_PROP_FRAME_HEIGHT), 
          camDev.get(CV_CAP_PROP_FRAME_WIDTH),
-         camDev.get(CV_CAP_PROP_FPS));
+         camDev.get(CV_CAP_PROP_FPS)
+        );
 #endif
   arUcos->printStatus();
 }
@@ -79,14 +82,13 @@ void UCamera::printStatus()
 //////////////////////////////////////////////////
 
 /** Constructor */
-UCamera::UCamera(UBridge *reg)
+UCamera::UCamera(UBridge * reg)
 {
   th1 = NULL;
   th1stop = false;
   saveImage = false;
   bridge = reg;
   arUcos = new ArUcoVals(this);
-  findBalls = new FindBalls(this);
   cameraOpen = setupCamera();
   // initialize coordinate conversion
   makeCamToRobotTransformation();
@@ -99,6 +101,7 @@ UCamera::UCamera(UBridge *reg)
     printf("#UCamera:: Camera setup failed - no camera available!  ################################\n");
   }
 }
+
 
 void UCamera::openCamLog()
 {
@@ -131,6 +134,7 @@ void UCamera::openCamLog()
   //
 }
 
+
 void UCamera::closeCamLog()
 {
   if (logImg != NULL)
@@ -142,6 +146,7 @@ void UCamera::closeCamLog()
 //   if (logArUco != NULL)
 //     fclose(logArUco);
 // }
+
 
 //////////////////////////////////////////////////
 /** destructor */
@@ -163,7 +168,7 @@ timeval UCamera::capture(cv::Mat &image)
   camDev.grab();
   gettimeofday(&imageTime, NULL);
   image.create(camDev.get(CV_CAP_PROP_FRAME_HEIGHT), camDev.get(CV_CAP_PROP_FRAME_WIDTH), CV_8UC3);
-  camDev.retrieve(image);
+  camDev.retrieve ( image);
 #else
   gettimeofday(&imageTime, NULL);
 #endif
@@ -180,9 +185,9 @@ int getAverageIntensity(cv::Mat im)
 {
   int sum = 0; // of red
   int n = 0;
-  for (int row = 2; row < im.rows; row += 55)
+  for (int row = 2; row < im.rows; row+=55)
   {
-    for (int col = 2; col < im.cols; col += 15)
+    for (int col= 2; col < im.cols; col+=15)
     {
       n++;
       cv::Vec3b pix = im.at<cv::Vec3b>(row, col);
@@ -190,7 +195,7 @@ int getAverageIntensity(cv::Mat im)
     }
     //       printf("# row=%d, n=%d sum=%d, avg=%d\n", row, n, sum, sum/n);
   }
-  return sum / n;
+  return sum/n;
 }
 
 //////////////////////////////////////////////////
@@ -202,18 +207,18 @@ int getAverageIntensity(cv::Mat im)
 void UCamera::run()
 {
   cv::Mat im; //, frame;
-              //   cv::Mat im2;
-              //   cv::Mat imd; // differense image
-              //   int lineState = 0;
-              //   UTime imTime, im2Time;
-              //   bool isOK = false;
-              //   printf("# camera thread started\n");
+//   cv::Mat im2;
+//   cv::Mat imd; // differense image
+//   int lineState = 0;
+//   UTime imTime, im2Time;
+//   bool isOK = false;
+//   printf("# camera thread started\n");
   UTime t;
   float dt = 0;
   saveImage = false;
   doArUcoAnalysis = false;
   doArUcoLoopTest = false;
-  doFindBall = false;
+  detectOrangeBall = false; // NEW!
   int arucoLoop = 100;
   while (not th1stop)
   {
@@ -226,14 +231,14 @@ void UCamera::run()
         imageNumber++;
         if (logImg != NULL)
         { // save to image logfile
-          fprintf(logImg, "%ld.%03ld %.3f %d %d %d\n",
-                  imTime.getSec(), imTime.getMilisec(),
+          fprintf(logImg, "%ld.%03ld %.3f %d %d %d\n", 
+                  imTime.getSec(), imTime.getMilisec(), 
                   bridge->info->regbotTime, imageNumber,
                   saveImage, doArUcoAnalysis);
         }
         // test function to access pixel values
         //imgAverage = getAverageIntensity(im);
-        //
+        // 
         // test for required actions
         if (saveImage)
         { // save image as PNG file (takes lots of time to compress and save to flash)
@@ -263,18 +268,16 @@ void UCamera::run()
           usleep(10000);
           if (arucoLoop == 0)
           { // finished
-            printf("# average ArUco analysis took %.2f ms\n", dt / 100 * 1000);
+            printf("# average ArUco analysis took %.2f ms\n", dt/100 * 1000);
             doArUcoLoopTest = false;
             arucoLoop = 100;
           }
         }
-        if (doFindBall)
-        {
-          // Test code
-          printf("Doing find ball detection");
-          double test = 120.0;
-          findBalls->deg2rad(test);
+        //------- NEW!!--------
+        if (detectOrangeBall){
+          detectOrangeBall = false;
         }
+        //---------------------
       }
     }
     else if (doArUcoAnalysis or saveImage)
@@ -296,12 +299,12 @@ void UCamera::run()
  * \param im is the 8-bit RGB image to save
  * \param filename is an optional image filename, if not used, then image is saved as image_[timestamp].png
  * */
-void UCamera::saveImageAsPng(cv::Mat im, const char *filename)
+void UCamera::saveImageAsPng(cv::Mat im, const char * filename)
 {
   const int MNL = 120;
   char date[25];
   char name[MNL];
-  const char *usename = filename;
+  const char * usename = filename;
   saveImage = false;
   // use date in filename
   // get date as string
@@ -329,52 +332,59 @@ void UCamera::saveImageAsPng(cv::Mat im, const char *filename)
   }
 }
 
+
 //////////////////////////////////////////////////////////////////
 
 void UCamera::makeCamToRobotTransformation()
 {
   //making a homegeneous transformation matrix from camera to robot robot_cam_H
-  float tx = camPos[0]; // 0.158094; //meter - forward
-  float ty = camPos[1]; // 0.0; // meter - left
-  float tz = camPos[2]; // 0.124882; //meter - up
-  cv::Mat tranH = (cv::Mat_<float>(4, 4) << 1, 0, 0, tx,
-                   0, 1, 0, ty,
-                   0, 0, 1, tz,
-                   0, 0, 0, 1);
-
-  float angle = camRot[0]; // degree positiv around xcam__axis - tilt
-  float co = cos(angle);
-  float si = sin(angle);
-  cv::Mat rotxH = (cv::Mat_<float>(4, 4) << 1, 0, 0, 0,
-                   0, co, -si, 0,
-                   0, si, co, 0,
-                   0, 0, 0, 1);
-
-  angle = camRot[1]; // degree positiv around ycam__axis - (roll?)
-  co = cos(angle);
-  si = sin(angle);
+  float tx 	= camPos[0]; // 0.158094; //meter - forward
+  float ty  = camPos[1]; // 0.0; // meter - left
+  float tz 	= camPos[2]; // 0.124882; //meter - up
+  cv::Mat tranH = (cv::Mat_<float>(4,4) << 
+              1,0,0, tx,    
+              0,1,0, ty,   
+              0,0,1, tz,  
+              0,0,0,  1);
+  
+  float angle 	= camRot[0]; // degree positiv around xcam__axis - tilt
+  float co 	= cos(angle);
+  float si 	= sin(angle);
+  cv::Mat rotxH = (cv::Mat_<float>(4,4) << 
+              1,  0,  0, 0,  
+              0, co, -si, 0,  
+              0, si, co, 0,  
+              0,  0,  0, 1);
+  
+  angle 	= camRot[1]; // degree positiv around ycam__axis - (roll?)
+  co 	= cos(angle);
+  si 	= sin(angle);
   // rotation matrix
-  cv::Mat rotyH = (cv::Mat_<float>(4, 4) << co, 0, si, 0,
-                   0, 1, 0, 0,
-                   -si, 0, co, 0,
-                   0, 0, 0, 1);
+  cv::Mat rotyH = (cv::Mat_<float>(4,4) << 
+              co,  0, si, 0,   
+               0,  1,  0, 0,   
+               -si, 0, co, 0,  
+               0,  0,  0, 1);
 
-  angle = camRot[2]; // 2nd rotation around temp zcam__axis -- pan
-  co = cos(angle);
-  si = sin(angle);
+  angle 	= camRot[2]; // 2nd rotation around temp zcam__axis -- pan
+  co 	= cos(angle);
+  si 	= sin(angle);
   // rotation matrix
-  cv::Mat rotzH = (cv::Mat_<float>(4, 4) << co, -si, 0, 0,
-                   si, co, 0, 0,
-                   0, 0, 1, 0,
-                   0, 0, 0, 1);
+  cv::Mat rotzH = (cv::Mat_<float>(4,4) << 
+               co,-si, 0, 0,  
+               si, co, 0, 0,   
+                0,  0, 1, 0,  
+                0,  0, 0, 1);
   // coordinate shift - from camera to robot orientation
-  cv::Mat cc = (cv::Mat_<float>(4, 4) << 0, 0, 1, 0,
-                -1, 0, 0, 0,
-                0, -1, 0, 0,
-                0, 0, 0, 1);
+  cv::Mat cc = (cv::Mat_<float>(4,4) << 
+               0, 0, 1, 0,
+              -1, 0, 0, 0,
+               0,-1, 0, 0,
+               0, 0, 0, 1);
   // combine to one matrix
   cam2robot = tranH * rotzH * rotyH * rotxH * cc;
 }
+
 
 void UCamera::setRoll(float roll)
 {
