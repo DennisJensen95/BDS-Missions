@@ -137,7 +137,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     }
     else
     {
-        printf("Found more than one circle\n");
+        printf("Found more than one circle or none\n");
 
         return EXIT_FAILURE;
     }

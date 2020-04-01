@@ -77,7 +77,7 @@ public:
 
     int frameCnt = 0;
 
-    FindBall findBall;
+    FindBall findBall; // Data class
 
 public:
     FindBalls(UCamera *iCam)
