@@ -87,9 +87,13 @@ public:
 
     ~FindBalls();
 
+    static const int MAX_VAL_CNT = 1;
+
     int doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime);
 
     void makeCamToRobotTransformation();
+
+    inline FindBall *returnDataPointer() { return &findBall; };
 
     inline double rad2deg(double a) { return a * 180 / M_PI; };
     inline double deg2rad(double a) { return a / 180 * M_PI; };

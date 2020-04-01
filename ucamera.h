@@ -64,10 +64,11 @@ public:
   bool doArUcoLoopTest = false;
   // opened OK
   bool cameraOpen = false;
-  // detected ArUco markers
-  ArUcoVals *arUcos = NULL;
+
   // Ball finding class
   FindBalls *findBalls = NULL;
+  // detected ArUco markers
+  ArUcoVals *arUcos = NULL;
   // camera position on robot
   cv::Vec3d camPos = {0.03, 0.03, 0.27};        /// x=fwd, y=left, z=up
   cv::Vec3d camRot = {0, 10 * M_PI / 180.0, 0}; /// roll, tilt, yaw (right hand rule, radians)

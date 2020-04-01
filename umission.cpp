@@ -408,8 +408,7 @@ bool UMission::mission1(int &state)
     break;
   case 20: // adjust position and go back
   {
-    FindBall *v;
-
+    FindBall *v = cam->findBalls->returnDataPointer;
     state = 11;
     break;
   }

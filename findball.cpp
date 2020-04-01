@@ -20,7 +20,6 @@ using namespace std;
 //////////////////////////////////////////////////
 ////////////// FindBall class ////////////////////
 //////////////////////////////////////////////////
-//////////////////////////////////////////////////
 
 cv::Mat FindBall::makeBallToCam4x4matrix(cv::Vec3f rVec, cv::Vec3f tVec)
 {
@@ -37,7 +36,8 @@ cv::Mat FindBall::makeBallToCam4x4matrix(cv::Vec3f rVec, cv::Vec3f tVec)
 ////////////////////////////////////////////////////
 
 void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
-{ // make ball to camera coordinate conversion matrix for this marker
+{
+    // make ball to camera coordinate conversion matrix for this marker
     ball2Cam = makeBallToCam4x4matrix(rVec, tVec);
     // combine with camera to robot coordinate conversion
     cv::Mat ball2robot = cam2robot * ball2Cam;
@@ -93,7 +93,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     erode(hsv_img, hsv_img, 4);
     dilate(hsv_img, hsv_img, 4);
 
-    inRange(hsv_img, cv::Scalar(7, 125, 78), cv::Scalar(28, 225, 240), thresh);
+    inRange(hsv_img, cv::Scalar(7, 35, 78), cv::Scalar(30, 225, 240), thresh);
 
     cv::HoughCircles(thresh, circles, cv::HOUGH_GRADIENT, 1, thresh.rows / 2, 30, 15, 10, 200);
 
@@ -126,7 +126,8 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
                                              cam->distortionCoefficients,
                                              rotationVectors,
                                              translationVectors);
-        FindBall *v;
+        // Data class returned owned by FindBalls
+        FindBall *v = FindBalls::returnDataPointer();
         v->lock.lock();
         v->imageTime = imTime;
         v->frameNumber = frameNumber;
