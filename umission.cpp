@@ -357,93 +357,95 @@ void UMission::runMission()
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
  * \returns true, when finished. */
-bool UMission::mission1(int & state)
+bool UMission::mission1(int &state)
 {
   bool finished = false;
   // First commands to send to robobot in given mission
   // (robot sends event 1 after driving 1 meter)):
   switch (state)
   {
-    case 0: // start
-      // tell the operatior what to do
-      printf("# started mission 1.\n");
-      system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &"); 
-      bridge->send("oled 5 looking 4 ball");
-      state=11;
-      break;
-    case 11: // start ball analysis
-    {
-      // wait for finished driving first part)
-      if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2*180/M_PI))
-      { // finished first drive and turnrate is zero'ish
-        state = 12;
-        // wait further 30ms - about one camera frame at 30 FPS
-        usleep(35000);
-        // start ball analysis 
-        printf("# started new ball analysis\n");
-        cam->doFindBall = true;
-      } /*else{ //DEBUG
+  case 0: // start
+    // tell the operatior what to do
+    printf("# started mission 1.\n");
+    system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 looking 4 ball");
+    state = 11;
+    break;
+  case 11: // start ball analysis
+  {
+    // wait for finished driving first part)
+    if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2 * 180 / M_PI))
+    { // finished first drive and turnrate is zero'ish
+      state = 12;
+      // wait further 30ms - about one camera frame at 30 FPS
+      usleep(35000);
+      // start ball analysis
+      printf("# started new ball analysis\n");
+      cam->doFindBall = true;
+    } /*else{ //DEBUG
         printf("Motor still running!\n");
         usleep(35000);
       }*/
-      break;
-    }
-    case 12: // check if ball is found
-      if (not cam->doFindBall)
-      { // ball processing finished
-        if (cam->ballFound > 0)
-        { // found a single ball
-          state = 30;
-          // tell the operator
-          printf("# case=%d found ball\n", state);
-          system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &"); 
-          bridge->send("oled 5 found ball");
-        }
-        else
-        { // yolo a bit more
-          //printf("# case=%d NO ball found\n", state); //DEBUG
-          state = 20;
-        }
+    break;
+  }
+  case 12: // check if ball is found
+    if (not cam->doFindBall)
+    { // ball processing finished
+      if (cam->ballFound > 0)
+      { // found a single ball
+        state = 30;
+        // tell the operator
+        printf("# case=%d found ball\n", state);
+        system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &");
+        bridge->send("oled 5 found ball");
       }
-      break;
-    case 20: // adjust position and go back
-    {
-      state = 11;
-      break;
-    }
-    case 30: // move to ball
-    {
-      int line = 0;
-      // yolo
-      snprintf(lines[line++], MAX_LEN, "vel=0");
-      // create event 1
-      snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
-      // add a line, so that the robot is occupied until next snippet has arrived
-      snprintf(lines[line++], MAX_LEN, ": dist=1");
-      // send the 6 lines to the REGBOT
-      sendAndActivateSnippet(lines, line);
-      // make sure event 1 is cleared
-      bridge->event->isEventSet(2);
-      // tell the operator
-      printf("# case=%d sent mission snippet 1\n", state);
-      system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
-      bridge->send("oled 5 code snippet 1");
-      state = 31;
-      break;
-    }
-    case 31: // check if movement is finished
-      // wait for event 2 (send when finished driving)
-      if (bridge->event->isEventSet(2))
-      { // stop
-        state = 999;
+      else
+      { // yolo a bit more
+        //printf("# case=%d NO ball found\n", state); //DEBUG
+        state = 20;
       }
-      break;
-    case 999: // end
-    default:
-      printf("mission 1 ended \n");
-      bridge->send("oled 5 \"mission 1 ended.\"");
-      finished = true;
-      break;
+    }
+    break;
+  case 20: // adjust position and go back
+  {
+    FindBall *v;
+
+    state = 11;
+    break;
+  }
+  case 30: // move to ball
+  {
+    int line = 0;
+    // yolo
+    snprintf(lines[line++], MAX_LEN, "vel=0");
+    // create event 1
+    snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(2);
+    // tell the operator
+    printf("# case=%d sent mission snippet 1\n", state);
+    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 1");
+    state = 31;
+    break;
+  }
+  case 31: // check if movement is finished
+    // wait for event 2 (send when finished driving)
+    if (bridge->event->isEventSet(2))
+    { // stop
+      state = 999;
+    }
+    break;
+  case 999: // end
+  default:
+    printf("mission 1 ended \n");
+    bridge->send("oled 5 \"mission 1 ended.\"");
+    finished = true;
+    break;
   }
   return finished;
 }

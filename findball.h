@@ -39,7 +39,8 @@ public:
     * Translation (position) of marker  x (left) ,y (down) ,z (forward)
     * as found by cv::aruco::detectMarkers
     * */
-    cv::Vec3f tVec = 0; 
+    cv::Vec3f tVec = 0;
+    cv::Vec3f test = 0;
     /**
     * Coordinate conversion matrix [4x4] from a position in ball coordinates (left, up, out)
     * to robot coordinates (forward, left, up) */
@@ -94,7 +95,6 @@ public:
     inline double deg2rad(double a) { return a / 180 * M_PI; };
 
     void setPoseAtImageTime(float x, float y, float_t h);
-
 };
 
 #endif
