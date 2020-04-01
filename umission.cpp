@@ -371,8 +371,10 @@ bool UMission::mission1(int &state)
       system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
       bridge->send("oled 5 looking 4 robot");
       state=10;
+      state=21; //DEBUG, SKIP FIRST PART
       break;
   case 10:
+  {
     int line = 0;
     // drive until line leading to Orsted
     snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edger=1, white=1: xl>10");
@@ -404,6 +406,7 @@ bool UMission::mission1(int &state)
     // go to wait for finished event 1
     state = 11;
     break;
+  }
   case 11:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
@@ -412,43 +415,69 @@ bool UMission::mission1(int &state)
     }
     break;
   case 21:
+  {
+    lineFlag = false;
     int line = 0;
     // continue along the line until the line is reached OR robot is seen
     // first drive a bit in case the front sensor just sees the gate
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: xl>10, dist=0.1");
+    //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: xl>10, dist=0.1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1: dist=0.1");
     // then continue driving
-    snprintf(lines[line++], MAX_LEN, ": xl>10, event=3");
+    //snprintf(lines[line++], MAX_LEN, ": xl>10, event=3");
+    snprintf(lines[line++], MAX_LEN, ": ir1 < 0.1");
     // create event 2
     snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
     snprintf(lines[line++], MAX_LEN, ": dist=1");
     sendAndActivateSnippet(lines, line);
+    //printf("Sent drive command.\n"); //DEBUG
     // make sure event 2 is cleared
     bridge->event->isEventSet(2);
     //
     state = 22;
     break;
+  }
   case 22:
+  {
     if(bridge->irdist->dist[1] < 0.15){
-      int line = 0;
-      // create event 3
-      snprintf(lines[line++], MAX_LEN, "event=3");
-      // add a line, so that the robot is occupied until next snippet has arrived
-      snprintf(lines[line++], MAX_LEN, ": dist=1");
-      sendAndActivateSnippet(lines, line);
-      // make sure event 3 is cleared
-      bridge->event->isEventSet(3);
+      state = 23;
     }
-    //
+
     if(bridge->event->isEventSet(2)){
-      state = 21;
-    }
-    //
-    if(bridge->event->isEventSet(2) and not bridge->event->isEventSet(3)){
-      state = 31;
+      lineFlag = true;
+      state = 23;
     }
     break;
+  }
+  case 23:
+  {
+    int line = 0;
+    // pause robot
+    snprintf(lines[line++], MAX_LEN, "vel=0 : time=2");
+    // create event 4
+    snprintf(lines[line++], MAX_LEN, "event=4");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    sendAndActivateSnippet(lines, line);
+    // clear event 4
+    bridge->event->isEventSet(4);
+    //printf("Sent stop command.\n"); //DEBUG
+    state = 24;
+    break;
+  }
+  case 24:
+  {
+    if(bridge->event->isEventSet(4)){
+      state = 21;
+
+      if (lineFlag){
+        state = 31;
+      }
+    }
+    break;
+  }
   case 31: //robot has reached the first line
+  {
     int line = 0;
     //TEST -> turn robot left and exit roundabout
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
@@ -465,6 +494,7 @@ bool UMission::mission1(int &state)
     //
     // go wait for finished
     state = 99;
+  }
   case 99:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))

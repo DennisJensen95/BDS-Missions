@@ -1,24 +1,24 @@
 Determining if the pthread_create exist failed with the following output:
-Change Dir: /home/local/mission/build/CMakeFiles/CMakeTmp
+Change Dir: /home/local/BDS-Missions/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_7c7e0/fast"
-/usr/bin/make -f CMakeFiles/cmTC_7c7e0.dir/build.make CMakeFiles/cmTC_7c7e0.dir/build
-make[1]: Entering directory '/home/local/svnregbot/mission/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_7c7e0.dir/CheckSymbolExists.c.o
-/usr/bin/cc     -o CMakeFiles/cmTC_7c7e0.dir/CheckSymbolExists.c.o   -c /home/local/mission/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
-Linking C executable cmTC_7c7e0
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7c7e0.dir/link.txt --verbose=1
-/usr/bin/cc       CMakeFiles/cmTC_7c7e0.dir/CheckSymbolExists.c.o  -o cmTC_7c7e0 -rdynamic 
-CMakeFiles/cmTC_7c7e0.dir/CheckSymbolExists.c.o: In function `main':
+Run Build Command:"/usr/bin/make" "cmTC_3ea64/fast"
+/usr/bin/make -f CMakeFiles/cmTC_3ea64.dir/build.make CMakeFiles/cmTC_3ea64.dir/build
+make[1]: Entering directory '/home/local/BDS-Missions/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3ea64.dir/CheckSymbolExists.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_3ea64.dir/CheckSymbolExists.c.o   -c /home/local/BDS-Missions/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_3ea64
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3ea64.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_3ea64.dir/CheckSymbolExists.c.o  -o cmTC_3ea64 -rdynamic 
+CMakeFiles/cmTC_3ea64.dir/CheckSymbolExists.c.o: In function `main':
 CheckSymbolExists.c:(.text+0x38): undefined reference to `pthread_create'
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_7c7e0.dir/build.make:97: recipe for target 'cmTC_7c7e0' failed
-make[1]: *** [cmTC_7c7e0] Error 1
-make[1]: Leaving directory '/home/local/svnregbot/mission/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_7c7e0/fast' failed
-make: *** [cmTC_7c7e0/fast] Error 2
+CMakeFiles/cmTC_3ea64.dir/build.make:97: recipe for target 'cmTC_3ea64' failed
+make[1]: *** [cmTC_3ea64] Error 1
+make[1]: Leaving directory '/home/local/BDS-Missions/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_3ea64/fast' failed
+make: *** [cmTC_3ea64/fast] Error 2
 
-File /home/local/mission/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+File /home/local/BDS-Missions/build/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
 /* */
 #include <pthread.h>
 
@@ -34,22 +34,22 @@ int main(int argc, char** argv)
 }
 
 Determining if the function pthread_create exists in the pthreads failed with the following output:
-Change Dir: /home/local/mission/build/CMakeFiles/CMakeTmp
+Change Dir: /home/local/BDS-Missions/build/CMakeFiles/CMakeTmp
 
-Run Build Command:"/usr/bin/make" "cmTC_49430/fast"
-/usr/bin/make -f CMakeFiles/cmTC_49430.dir/build.make CMakeFiles/cmTC_49430.dir/build
-make[1]: Entering directory '/home/local/svnregbot/mission/build/CMakeFiles/CMakeTmp'
-Building C object CMakeFiles/cmTC_49430.dir/CheckFunctionExists.c.o
-/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_49430.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.7/Modules/CheckFunctionExists.c
-Linking C executable cmTC_49430
-/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_49430.dir/link.txt --verbose=1
-/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_49430.dir/CheckFunctionExists.c.o  -o cmTC_49430 -rdynamic -lpthreads 
+Run Build Command:"/usr/bin/make" "cmTC_3e114/fast"
+/usr/bin/make -f CMakeFiles/cmTC_3e114.dir/build.make CMakeFiles/cmTC_3e114.dir/build
+make[1]: Entering directory '/home/local/BDS-Missions/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_3e114.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_3e114.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.7/Modules/CheckFunctionExists.c
+Linking C executable cmTC_3e114
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3e114.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_3e114.dir/CheckFunctionExists.c.o  -o cmTC_3e114 -rdynamic -lpthreads 
 /usr/bin/ld: cannot find -lpthreads
 collect2: error: ld returned 1 exit status
-CMakeFiles/cmTC_49430.dir/build.make:97: recipe for target 'cmTC_49430' failed
-make[1]: *** [cmTC_49430] Error 1
-make[1]: Leaving directory '/home/local/svnregbot/mission/build/CMakeFiles/CMakeTmp'
-Makefile:126: recipe for target 'cmTC_49430/fast' failed
-make: *** [cmTC_49430/fast] Error 2
+CMakeFiles/cmTC_3e114.dir/build.make:97: recipe for target 'cmTC_3e114' failed
+make[1]: *** [cmTC_3e114] Error 1
+make[1]: Leaving directory '/home/local/BDS-Missions/build/CMakeFiles/CMakeTmp'
+Makefile:126: recipe for target 'cmTC_3e114/fast' failed
+make: *** [cmTC_3e114/fast] Error 2
 
 

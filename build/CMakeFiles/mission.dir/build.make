@@ -43,10 +43,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/local/mission
+CMAKE_SOURCE_DIR = /home/local/BDS-Missions
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/local/mission/build
+CMAKE_BINARY_DIR = /home/local/BDS-Missions/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/mission.dir/depend.make
@@ -59,16 +59,16 @@ include CMakeFiles/mission.dir/flags.make
 
 CMakeFiles/mission.dir/main.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/mission.dir/main.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/main.cpp.o -c /home/local/mission/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/mission.dir/main.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/main.cpp.o -c /home/local/BDS-Missions/main.cpp
 
 CMakeFiles/mission.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/main.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/main.cpp > CMakeFiles/mission.dir/main.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/main.cpp > CMakeFiles/mission.dir/main.cpp.i
 
 CMakeFiles/mission.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/main.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/main.cpp -o CMakeFiles/mission.dir/main.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/main.cpp -o CMakeFiles/mission.dir/main.cpp.s
 
 CMakeFiles/mission.dir/main.cpp.o.requires:
 
@@ -83,16 +83,16 @@ CMakeFiles/mission.dir/main.cpp.o.provides.build: CMakeFiles/mission.dir/main.cp
 
 CMakeFiles/mission.dir/urun.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/urun.cpp.o: ../urun.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/mission.dir/urun.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/urun.cpp.o -c /home/local/mission/urun.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/mission.dir/urun.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/urun.cpp.o -c /home/local/BDS-Missions/urun.cpp
 
 CMakeFiles/mission.dir/urun.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/urun.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/urun.cpp > CMakeFiles/mission.dir/urun.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/urun.cpp > CMakeFiles/mission.dir/urun.cpp.i
 
 CMakeFiles/mission.dir/urun.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/urun.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/urun.cpp -o CMakeFiles/mission.dir/urun.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/urun.cpp -o CMakeFiles/mission.dir/urun.cpp.s
 
 CMakeFiles/mission.dir/urun.cpp.o.requires:
 
@@ -107,16 +107,16 @@ CMakeFiles/mission.dir/urun.cpp.o.provides.build: CMakeFiles/mission.dir/urun.cp
 
 CMakeFiles/mission.dir/ucamera.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ucamera.cpp.o: ../ucamera.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/mission.dir/ucamera.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ucamera.cpp.o -c /home/local/mission/ucamera.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/mission.dir/ucamera.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ucamera.cpp.o -c /home/local/BDS-Missions/ucamera.cpp
 
 CMakeFiles/mission.dir/ucamera.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ucamera.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ucamera.cpp > CMakeFiles/mission.dir/ucamera.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ucamera.cpp > CMakeFiles/mission.dir/ucamera.cpp.i
 
 CMakeFiles/mission.dir/ucamera.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ucamera.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ucamera.cpp -o CMakeFiles/mission.dir/ucamera.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ucamera.cpp -o CMakeFiles/mission.dir/ucamera.cpp.s
 
 CMakeFiles/mission.dir/ucamera.cpp.o.requires:
 
@@ -131,16 +131,16 @@ CMakeFiles/mission.dir/ucamera.cpp.o.provides.build: CMakeFiles/mission.dir/ucam
 
 CMakeFiles/mission.dir/ubridge.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ubridge.cpp.o: ../ubridge.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/mission.dir/ubridge.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ubridge.cpp.o -c /home/local/mission/ubridge.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/mission.dir/ubridge.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ubridge.cpp.o -c /home/local/BDS-Missions/ubridge.cpp
 
 CMakeFiles/mission.dir/ubridge.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ubridge.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ubridge.cpp > CMakeFiles/mission.dir/ubridge.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ubridge.cpp > CMakeFiles/mission.dir/ubridge.cpp.i
 
 CMakeFiles/mission.dir/ubridge.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ubridge.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ubridge.cpp -o CMakeFiles/mission.dir/ubridge.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ubridge.cpp -o CMakeFiles/mission.dir/ubridge.cpp.s
 
 CMakeFiles/mission.dir/ubridge.cpp.o.requires:
 
@@ -155,16 +155,16 @@ CMakeFiles/mission.dir/ubridge.cpp.o.provides.build: CMakeFiles/mission.dir/ubri
 
 CMakeFiles/mission.dir/umission.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/umission.cpp.o: ../umission.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/mission.dir/umission.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/umission.cpp.o -c /home/local/mission/umission.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/mission.dir/umission.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/umission.cpp.o -c /home/local/BDS-Missions/umission.cpp
 
 CMakeFiles/mission.dir/umission.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/umission.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/umission.cpp > CMakeFiles/mission.dir/umission.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/umission.cpp > CMakeFiles/mission.dir/umission.cpp.i
 
 CMakeFiles/mission.dir/umission.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/umission.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/umission.cpp -o CMakeFiles/mission.dir/umission.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/umission.cpp -o CMakeFiles/mission.dir/umission.cpp.s
 
 CMakeFiles/mission.dir/umission.cpp.o.requires:
 
@@ -179,16 +179,16 @@ CMakeFiles/mission.dir/umission.cpp.o.provides.build: CMakeFiles/mission.dir/umi
 
 CMakeFiles/mission.dir/utime.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/utime.cpp.o: ../utime.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/mission.dir/utime.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/utime.cpp.o -c /home/local/mission/utime.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/mission.dir/utime.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/utime.cpp.o -c /home/local/BDS-Missions/utime.cpp
 
 CMakeFiles/mission.dir/utime.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/utime.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/utime.cpp > CMakeFiles/mission.dir/utime.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/utime.cpp > CMakeFiles/mission.dir/utime.cpp.i
 
 CMakeFiles/mission.dir/utime.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/utime.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/utime.cpp -o CMakeFiles/mission.dir/utime.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/utime.cpp -o CMakeFiles/mission.dir/utime.cpp.s
 
 CMakeFiles/mission.dir/utime.cpp.o.requires:
 
@@ -203,16 +203,16 @@ CMakeFiles/mission.dir/utime.cpp.o.provides.build: CMakeFiles/mission.dir/utime.
 
 CMakeFiles/mission.dir/tcpCase.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/tcpCase.cpp.o: ../tcpCase.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/mission.dir/tcpCase.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/tcpCase.cpp.o -c /home/local/mission/tcpCase.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/mission.dir/tcpCase.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/tcpCase.cpp.o -c /home/local/BDS-Missions/tcpCase.cpp
 
 CMakeFiles/mission.dir/tcpCase.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/tcpCase.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/tcpCase.cpp > CMakeFiles/mission.dir/tcpCase.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/tcpCase.cpp > CMakeFiles/mission.dir/tcpCase.cpp.i
 
 CMakeFiles/mission.dir/tcpCase.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/tcpCase.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/tcpCase.cpp -o CMakeFiles/mission.dir/tcpCase.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/tcpCase.cpp -o CMakeFiles/mission.dir/tcpCase.cpp.s
 
 CMakeFiles/mission.dir/tcpCase.cpp.o.requires:
 
@@ -227,16 +227,16 @@ CMakeFiles/mission.dir/tcpCase.cpp.o.provides.build: CMakeFiles/mission.dir/tcpC
 
 CMakeFiles/mission.dir/uevent.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uevent.cpp.o: ../uevent.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/mission.dir/uevent.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uevent.cpp.o -c /home/local/mission/uevent.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/mission.dir/uevent.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uevent.cpp.o -c /home/local/BDS-Missions/uevent.cpp
 
 CMakeFiles/mission.dir/uevent.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uevent.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uevent.cpp > CMakeFiles/mission.dir/uevent.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uevent.cpp > CMakeFiles/mission.dir/uevent.cpp.i
 
 CMakeFiles/mission.dir/uevent.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uevent.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uevent.cpp -o CMakeFiles/mission.dir/uevent.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uevent.cpp -o CMakeFiles/mission.dir/uevent.cpp.s
 
 CMakeFiles/mission.dir/uevent.cpp.o.requires:
 
@@ -251,16 +251,16 @@ CMakeFiles/mission.dir/uevent.cpp.o.provides.build: CMakeFiles/mission.dir/ueven
 
 CMakeFiles/mission.dir/ujoy.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ujoy.cpp.o: ../ujoy.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/mission.dir/ujoy.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ujoy.cpp.o -c /home/local/mission/ujoy.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/mission.dir/ujoy.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ujoy.cpp.o -c /home/local/BDS-Missions/ujoy.cpp
 
 CMakeFiles/mission.dir/ujoy.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ujoy.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ujoy.cpp > CMakeFiles/mission.dir/ujoy.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ujoy.cpp > CMakeFiles/mission.dir/ujoy.cpp.i
 
 CMakeFiles/mission.dir/ujoy.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ujoy.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ujoy.cpp -o CMakeFiles/mission.dir/ujoy.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ujoy.cpp -o CMakeFiles/mission.dir/ujoy.cpp.s
 
 CMakeFiles/mission.dir/ujoy.cpp.o.requires:
 
@@ -275,16 +275,16 @@ CMakeFiles/mission.dir/ujoy.cpp.o.provides.build: CMakeFiles/mission.dir/ujoy.cp
 
 CMakeFiles/mission.dir/uinfo.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uinfo.cpp.o: ../uinfo.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/mission.dir/uinfo.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uinfo.cpp.o -c /home/local/mission/uinfo.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/mission.dir/uinfo.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uinfo.cpp.o -c /home/local/BDS-Missions/uinfo.cpp
 
 CMakeFiles/mission.dir/uinfo.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uinfo.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uinfo.cpp > CMakeFiles/mission.dir/uinfo.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uinfo.cpp > CMakeFiles/mission.dir/uinfo.cpp.i
 
 CMakeFiles/mission.dir/uinfo.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uinfo.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uinfo.cpp -o CMakeFiles/mission.dir/uinfo.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uinfo.cpp -o CMakeFiles/mission.dir/uinfo.cpp.s
 
 CMakeFiles/mission.dir/uinfo.cpp.o.requires:
 
@@ -299,16 +299,16 @@ CMakeFiles/mission.dir/uinfo.cpp.o.provides.build: CMakeFiles/mission.dir/uinfo.
 
 CMakeFiles/mission.dir/umotor.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/umotor.cpp.o: ../umotor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/mission.dir/umotor.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/umotor.cpp.o -c /home/local/mission/umotor.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/mission.dir/umotor.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/umotor.cpp.o -c /home/local/BDS-Missions/umotor.cpp
 
 CMakeFiles/mission.dir/umotor.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/umotor.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/umotor.cpp > CMakeFiles/mission.dir/umotor.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/umotor.cpp > CMakeFiles/mission.dir/umotor.cpp.i
 
 CMakeFiles/mission.dir/umotor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/umotor.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/umotor.cpp -o CMakeFiles/mission.dir/umotor.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/umotor.cpp -o CMakeFiles/mission.dir/umotor.cpp.s
 
 CMakeFiles/mission.dir/umotor.cpp.o.requires:
 
@@ -323,16 +323,16 @@ CMakeFiles/mission.dir/umotor.cpp.o.provides.build: CMakeFiles/mission.dir/umoto
 
 CMakeFiles/mission.dir/uedge.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uedge.cpp.o: ../uedge.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/mission.dir/uedge.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uedge.cpp.o -c /home/local/mission/uedge.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/mission.dir/uedge.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uedge.cpp.o -c /home/local/BDS-Missions/uedge.cpp
 
 CMakeFiles/mission.dir/uedge.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uedge.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uedge.cpp > CMakeFiles/mission.dir/uedge.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uedge.cpp > CMakeFiles/mission.dir/uedge.cpp.i
 
 CMakeFiles/mission.dir/uedge.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uedge.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uedge.cpp -o CMakeFiles/mission.dir/uedge.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uedge.cpp -o CMakeFiles/mission.dir/uedge.cpp.s
 
 CMakeFiles/mission.dir/uedge.cpp.o.requires:
 
@@ -347,16 +347,16 @@ CMakeFiles/mission.dir/uedge.cpp.o.provides.build: CMakeFiles/mission.dir/uedge.
 
 CMakeFiles/mission.dir/upose.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/upose.cpp.o: ../upose.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/mission.dir/upose.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/upose.cpp.o -c /home/local/mission/upose.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/mission.dir/upose.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/upose.cpp.o -c /home/local/BDS-Missions/upose.cpp
 
 CMakeFiles/mission.dir/upose.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/upose.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/upose.cpp > CMakeFiles/mission.dir/upose.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/upose.cpp > CMakeFiles/mission.dir/upose.cpp.i
 
 CMakeFiles/mission.dir/upose.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/upose.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/upose.cpp -o CMakeFiles/mission.dir/upose.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/upose.cpp -o CMakeFiles/mission.dir/upose.cpp.s
 
 CMakeFiles/mission.dir/upose.cpp.o.requires:
 
@@ -371,16 +371,16 @@ CMakeFiles/mission.dir/upose.cpp.o.provides.build: CMakeFiles/mission.dir/upose.
 
 CMakeFiles/mission.dir/uirdist.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uirdist.cpp.o: ../uirdist.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/mission.dir/uirdist.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uirdist.cpp.o -c /home/local/mission/uirdist.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/mission.dir/uirdist.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uirdist.cpp.o -c /home/local/BDS-Missions/uirdist.cpp
 
 CMakeFiles/mission.dir/uirdist.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uirdist.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uirdist.cpp > CMakeFiles/mission.dir/uirdist.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uirdist.cpp > CMakeFiles/mission.dir/uirdist.cpp.i
 
 CMakeFiles/mission.dir/uirdist.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uirdist.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uirdist.cpp -o CMakeFiles/mission.dir/uirdist.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uirdist.cpp -o CMakeFiles/mission.dir/uirdist.cpp.s
 
 CMakeFiles/mission.dir/uirdist.cpp.o.requires:
 
@@ -395,16 +395,16 @@ CMakeFiles/mission.dir/uirdist.cpp.o.provides.build: CMakeFiles/mission.dir/uird
 
 CMakeFiles/mission.dir/uaccgyro.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uaccgyro.cpp.o: ../uaccgyro.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/mission.dir/uaccgyro.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uaccgyro.cpp.o -c /home/local/mission/uaccgyro.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/mission.dir/uaccgyro.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uaccgyro.cpp.o -c /home/local/BDS-Missions/uaccgyro.cpp
 
 CMakeFiles/mission.dir/uaccgyro.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uaccgyro.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uaccgyro.cpp > CMakeFiles/mission.dir/uaccgyro.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uaccgyro.cpp > CMakeFiles/mission.dir/uaccgyro.cpp.i
 
 CMakeFiles/mission.dir/uaccgyro.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uaccgyro.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uaccgyro.cpp -o CMakeFiles/mission.dir/uaccgyro.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uaccgyro.cpp -o CMakeFiles/mission.dir/uaccgyro.cpp.s
 
 CMakeFiles/mission.dir/uaccgyro.cpp.o.requires:
 
@@ -419,16 +419,16 @@ CMakeFiles/mission.dir/uaccgyro.cpp.o.provides.build: CMakeFiles/mission.dir/uac
 
 CMakeFiles/mission.dir/uaruco.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/uaruco.cpp.o: ../uaruco.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/mission.dir/uaruco.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uaruco.cpp.o -c /home/local/mission/uaruco.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/mission.dir/uaruco.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/uaruco.cpp.o -c /home/local/BDS-Missions/uaruco.cpp
 
 CMakeFiles/mission.dir/uaruco.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/uaruco.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/uaruco.cpp > CMakeFiles/mission.dir/uaruco.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/uaruco.cpp > CMakeFiles/mission.dir/uaruco.cpp.i
 
 CMakeFiles/mission.dir/uaruco.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/uaruco.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/uaruco.cpp -o CMakeFiles/mission.dir/uaruco.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/uaruco.cpp -o CMakeFiles/mission.dir/uaruco.cpp.s
 
 CMakeFiles/mission.dir/uaruco.cpp.o.requires:
 
@@ -443,16 +443,16 @@ CMakeFiles/mission.dir/uaruco.cpp.o.provides.build: CMakeFiles/mission.dir/uaruc
 
 CMakeFiles/mission.dir/ulibpose2pose.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ulibpose2pose.cpp.o: ../ulibpose2pose.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/mission.dir/ulibpose2pose.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibpose2pose.cpp.o -c /home/local/mission/ulibpose2pose.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building CXX object CMakeFiles/mission.dir/ulibpose2pose.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibpose2pose.cpp.o -c /home/local/BDS-Missions/ulibpose2pose.cpp
 
 CMakeFiles/mission.dir/ulibpose2pose.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ulibpose2pose.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ulibpose2pose.cpp > CMakeFiles/mission.dir/ulibpose2pose.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ulibpose2pose.cpp > CMakeFiles/mission.dir/ulibpose2pose.cpp.i
 
 CMakeFiles/mission.dir/ulibpose2pose.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ulibpose2pose.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ulibpose2pose.cpp -o CMakeFiles/mission.dir/ulibpose2pose.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ulibpose2pose.cpp -o CMakeFiles/mission.dir/ulibpose2pose.cpp.s
 
 CMakeFiles/mission.dir/ulibpose2pose.cpp.o.requires:
 
@@ -467,16 +467,16 @@ CMakeFiles/mission.dir/ulibpose2pose.cpp.o.provides.build: CMakeFiles/mission.di
 
 CMakeFiles/mission.dir/ulib2dline.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ulib2dline.cpp.o: ../ulib2dline.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/mission.dir/ulib2dline.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulib2dline.cpp.o -c /home/local/mission/ulib2dline.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building CXX object CMakeFiles/mission.dir/ulib2dline.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulib2dline.cpp.o -c /home/local/BDS-Missions/ulib2dline.cpp
 
 CMakeFiles/mission.dir/ulib2dline.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ulib2dline.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ulib2dline.cpp > CMakeFiles/mission.dir/ulib2dline.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ulib2dline.cpp > CMakeFiles/mission.dir/ulib2dline.cpp.i
 
 CMakeFiles/mission.dir/ulib2dline.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ulib2dline.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ulib2dline.cpp -o CMakeFiles/mission.dir/ulib2dline.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ulib2dline.cpp -o CMakeFiles/mission.dir/ulib2dline.cpp.s
 
 CMakeFiles/mission.dir/ulib2dline.cpp.o.requires:
 
@@ -491,16 +491,16 @@ CMakeFiles/mission.dir/ulib2dline.cpp.o.provides.build: CMakeFiles/mission.dir/u
 
 CMakeFiles/mission.dir/ulibpose.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ulibpose.cpp.o: ../ulibpose.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/mission.dir/ulibpose.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibpose.cpp.o -c /home/local/mission/ulibpose.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building CXX object CMakeFiles/mission.dir/ulibpose.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibpose.cpp.o -c /home/local/BDS-Missions/ulibpose.cpp
 
 CMakeFiles/mission.dir/ulibpose.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ulibpose.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ulibpose.cpp > CMakeFiles/mission.dir/ulibpose.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ulibpose.cpp > CMakeFiles/mission.dir/ulibpose.cpp.i
 
 CMakeFiles/mission.dir/ulibpose.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ulibpose.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ulibpose.cpp -o CMakeFiles/mission.dir/ulibpose.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ulibpose.cpp -o CMakeFiles/mission.dir/ulibpose.cpp.s
 
 CMakeFiles/mission.dir/ulibpose.cpp.o.requires:
 
@@ -515,16 +515,16 @@ CMakeFiles/mission.dir/ulibpose.cpp.o.provides.build: CMakeFiles/mission.dir/uli
 
 CMakeFiles/mission.dir/ulibposev.cpp.o: CMakeFiles/mission.dir/flags.make
 CMakeFiles/mission.dir/ulibposev.cpp.o: ../ulibposev.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/mission.dir/ulibposev.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibposev.cpp.o -c /home/local/mission/ulibposev.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building CXX object CMakeFiles/mission.dir/ulibposev.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/mission.dir/ulibposev.cpp.o -c /home/local/BDS-Missions/ulibposev.cpp
 
 CMakeFiles/mission.dir/ulibposev.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/mission.dir/ulibposev.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/mission/ulibposev.cpp > CMakeFiles/mission.dir/ulibposev.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/local/BDS-Missions/ulibposev.cpp > CMakeFiles/mission.dir/ulibposev.cpp.i
 
 CMakeFiles/mission.dir/ulibposev.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/mission.dir/ulibposev.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/mission/ulibposev.cpp -o CMakeFiles/mission.dir/ulibposev.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/local/BDS-Missions/ulibposev.cpp -o CMakeFiles/mission.dir/ulibposev.cpp.s
 
 CMakeFiles/mission.dir/ulibposev.cpp.o.requires:
 
@@ -633,7 +633,7 @@ mission: /usr/local/lib/libopencv_flann.so.3.4.9
 mission: /usr/local/lib/libopencv_imgproc.so.3.4.9
 mission: /usr/local/lib/libopencv_core.so.3.4.9
 mission: CMakeFiles/mission.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/local/mission/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable mission"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/local/BDS-Missions/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Linking CXX executable mission"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/mission.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -669,6 +669,6 @@ CMakeFiles/mission.dir/clean:
 .PHONY : CMakeFiles/mission.dir/clean
 
 CMakeFiles/mission.dir/depend:
-	cd /home/local/mission/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/local/mission /home/local/mission /home/local/mission/build /home/local/mission/build /home/local/mission/build/CMakeFiles/mission.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/local/BDS-Missions/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/local/BDS-Missions /home/local/BDS-Missions /home/local/BDS-Missions/build /home/local/BDS-Missions/build /home/local/BDS-Missions/build/CMakeFiles/mission.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/mission.dir/depend
 

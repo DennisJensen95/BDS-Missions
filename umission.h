@@ -62,6 +62,9 @@ private:
   char * lines[missionLineMax];
   /** logfile for mission state */
   FILE * logMission = NULL;
+
+  // used in mission roundabout
+  bool lineFlag = false;
   
 public:
   /**
