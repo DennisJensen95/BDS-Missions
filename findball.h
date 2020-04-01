@@ -39,11 +39,16 @@ public:
     * Translation (position) of marker  x (left) ,y (down) ,z (forward)
     * as found by cv::aruco::detectMarkers
     * */
-
+    cv::Vec3f tVec = 0; 
+    /**
+    * Coordinate conversion matrix [4x4] from a position in ball coordinates (left, up, out)
+    * to robot coordinates (forward, left, up) */
     cv::Mat ball2Cam;
-
+    /**
+    * Ball position in robot coordinates
+    * x = forward, y=left, z=up */
     cv::Mat ballPosition;
-
+    // euclidean distance in meters
     float distance2ball = 0;
 
     float ballAngle = 0;
@@ -70,6 +75,8 @@ public:
     UCamera *cam;
 
     int frameCnt = 0;
+
+    FindBall findBall;
 
 public:
     FindBalls(UCamera *iCam)

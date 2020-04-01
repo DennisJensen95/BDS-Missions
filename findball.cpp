@@ -18,15 +18,68 @@ using namespace std;
 
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
+////////////// FindBall class ////////////////////
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
+
+cv::Mat FindBall::makeBallToCam4x4matrix(cv::Vec3f rVec, cv::Vec3f tVec)
+{
+  cv::Mat R, camH;
+  Rodrigues(rVec, R);          // 3 cols, 3 rows
+  cv::Mat col = cv::Mat(tVec); // 1 cols, 3 rows
+  hconcat(R, col, camH);       // 4 cols, 3 rows
+  float tempRow[4] = {0, 0, 0, 1};
+  cv::Mat row = cv::Mat(1, 4, CV_32F, tempRow); // 4 cols, 1 row
+  camH.push_back(row);                          // 4 cols, 4 rows
+  return camH;                                  // 4 cols, 4 rows
+}
+
+////////////////////////////////////////////////////
+
+void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
+{ // make ball to camera coordinate conversion matrix for this marker
+  ball2Cam = makeBallToCam4x4matrix(rVec, tVec);
+  // combine with camera to robot coordinate conversion
+  cv::Mat ball2robot = cam2robot * ball2Cam;
+
+  // get position of ball center
+  cv::Vec4f zeroVec = {0, 0, 0, 1};
+  ballPosition = ball2robot * cv::Mat(zeroVec);
+  // get position of 4cm in z-ball direction - out from ball
+  cv::Vec4f zeroVecZ = {0, 0, 0.04, 1};
+  cv::Mat ball4cmVecZ = ball2robot * cv::Mat(zeroVecZ);
+  // get ball z-vector (in robot coordinate system)
+  cv::Mat dz4cm = ball4cmVecZ - ballPosition;
+
+  // ASSUMES VERTICAL BALL ?
+  // rotation of marker Z vector in robot coordinates around robot Z axis
+  ballAngle = atan2(-dz4cm.at<float>(0, 1), -dz4cm.at<float>(0, 0));
+  
+  // in plane distance sqrt(x^2 + y^2) only - using hypot(x,y) function
+  distance2ball = hypotf(ballPosition.at<float>(0, 0), ballPosition.at<float>(0, 1));
+  if (true)
+  { // debug
+    printf("# Ball found at(%.3fx, %.3fy, %.3fz) (robot coo), plane dist %.3fm, angle %.3f rad, or %.1f deg\n",
+            ballPosition.at<float>(0, 0), ballPosition.at<float>(0, 1), ballPosition.at<float>(0, 2),
+           distance2ball, ballAngle, ballAngle * 180 / M_PI);
+  }
+}
+
+
+//////////////////////////////////////////////////
+//////////////////////////////////////////////////
 ////////////// FindBalls class ////////////////////
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
+    const float ballSqaureDimensions = 0.041; //4.1 cm diameter
     vector<vector<cv::Point2f>> ballCorners;
-    
+    vector<cv::Point2f> corners;
+
     vector<cv::Vec3d> rotationVectors, translationVectors;
+
     UTime t;
     t.now();
 
@@ -47,6 +100,32 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         printf("Centre coordinates:\t");
         printf("x = %d, y = %d\n", x, y);
         printf("Radius:\t\t\tr = %d pixels\n", r);
+        
+        corners.push_back(cv::Point2f(x-r,y-r));
+        corners.push_back(cv::Point2f(x+r,y-r));
+        corners.push_back(cv::Point2f(x+r,y+r));
+        corners.push_back(cv::Point2f(x-r,y+r));
+
+        ballCorners.push_back(corners);
+
+        printf("Ball corners:\n");
+        for (int i=0;i<4;i++){
+            printf("(%.2f,%.2f)\t\t", ballCorners[0][i].x,ballCorners[0][i].y);
+        }
+
+        cv::aruco::estimatePoseSingleMarkers(ballCorners,
+                                         ballSqaureDimensions,
+                                         cam->cameraMatrix,
+                                         cam->distortionCoefficients,
+                                         rotationVectors,
+                                         translationVectors);
+        FindBall *v = &findBall;
+        v->lock.lock();
+        v->imageTime = imTime;
+        v->frameNumber = frameNumber;
+        v->rVec = rotationVectors[0];
+        v->tVec = translationVectors[0];
+
 
 
         return 1;

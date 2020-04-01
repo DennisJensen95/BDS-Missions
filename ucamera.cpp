@@ -222,6 +222,7 @@ void UCamera::run()
     {
       // capture RGB image to a Mat structure
       imTime = capture(im);
+      //printf("Took a picture!!!!!!!\n"); //DEBUG
       if (im.rows > 10 and im.cols > 10)
       { // there is an image
         imageNumber++;

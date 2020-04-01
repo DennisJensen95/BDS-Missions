@@ -382,7 +382,7 @@ bool UMission::mission1(int & state)
         // start ball analysis 
         printf("# started new ball analysis\n");
         cam->doFindBall = true;
-      } /*else{
+      } /*else{ //DEBUG
         printf("Motor still running!\n");
         usleep(35000);
       }*/
