@@ -133,6 +133,8 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         v->frameNumber = frameNumber;
         v->rVec = rotationVectors[0];
         v->tVec = translationVectors[0];
+        v->ballToRobotCoordinate(cam->cam2robot);
+        v->lock.unlock();
 
         return EXIT_SUCCESS;
     }

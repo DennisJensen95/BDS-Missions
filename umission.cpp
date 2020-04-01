@@ -391,7 +391,7 @@ bool UMission::mission1(int &state)
   case 12: // check if ball is found
     if (not cam->doFindBall)
     { // ball processing finished
-      if (cam->ballFound > 0)
+      if (cam->ballFound == 0)
       { // found a single ball
         state = 30;
         // tell the operator
@@ -408,28 +408,81 @@ bool UMission::mission1(int &state)
     break;
   case 20: // adjust position and go back
   {
-    FindBall *v = cam->findBalls->returnDataPointer;
     state = 11;
     break;
   }
   case 30: // move to ball
   {
-    int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
-    // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, line);
-    // make sure event 1 is cleared
-    bridge->event->isEventSet(2);
-    // tell the operator
-    printf("# case=%d sent mission snippet 1\n", state);
-    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 1");
-    state = 31;
+    FindBall *v = cam->findBalls->returnDataPointer();
+
+    float xm = v->ballPosition.at<float>(0,0);
+    float ym = v->ballPosition.at<float>(0,1);
+    float hm = v->ballAngle;
+
+    // stop some distance in front of marker
+    float dx = 0.3; // distance to stop in front of marker
+    float dy = 0.0; // distance to the left of marker
+    xm += - dx*cos(hm) + dy*sin(hm);
+    ym += - dx*sin(hm) - dy*cos(hm);
+    // limits
+    float acc = 1.0; // max allowed acceleration - linear and turn
+    float vel = 0.3; // desired velocity
+    // set parameters
+    // end at 0 m/s velocity
+    UPose2pose pp4(xm, ym, hm, 0.0);
+    printf("\n");
+    // calculate turn-straight-turn (Angle-Line-Angle)  manoeuvre
+    bool isOK = pp4.calculateALA(vel, acc);
+    // use only if distance to destination is more than 3cm
+    if (isOK and (pp4.movementDistance() > 0.03))
+    { // a solution is found - and more that 3cm away.
+      // debug print manoeuvre details
+      pp4.printMan();
+      printf("\n");
+      // debug end
+      int line = 0;
+      if (pp4.initialBreak > 0.01)
+      { // there is a starting straight part
+        snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", 
+                  pp4.straightVel, acc, pp4.straightVel);
+      }
+      snprintf(lines[line++], MAX_LEN,   "vel=%.3f,tr=%.3f :turn=%.1f", 
+                pp4.straightVel, pp4.radius1, pp4.turnArc1 * 180 / M_PI);
+      snprintf(lines[line++], MAX_LEN,   ":dist=%.3f", pp4.straightDist);
+      snprintf(lines[line++], MAX_LEN,   "tr=%.3f :turn=%.1f", 
+                pp4.radius2, pp4.turnArc2 * 180 / M_PI);
+      if (pp4.finalBreak > 0.01)
+      { // there is a straight break distance
+        snprintf(lines[line++], MAX_LEN,   "vel=0 : time=%.2f", 
+                  sqrt(2*pp4.finalBreak));
+      }
+      snprintf(lines[line++], MAX_LEN,   "vel=0, event=2: dist=1");
+      sendAndActivateSnippet(lines, line);
+      // make sure event 2 is cleared
+      bridge->event->isEventSet(2);
+      //
+      // debug
+      for (int i = 0; i < line; i++)
+      { // print sent lines
+        printf("# line %d: %s\n", i, lines[i]);
+      }
+      // debug end
+      // tell the operator
+      printf("# Sent mission snippet to marker (%d lines)\n", line);
+      //system("espeak \"code snippet to marker.\" -ven+f4 -s130 -a20 2>/dev/null &"); 
+      bridge->send("oled 5 code to marker");
+      // wait for movement to finish
+      state = 31;
+    }
+    else
+    { // no marker or already there
+      printf("# No need to move, just %.2fm, frame %d\n", 
+              pp4.movementDistance(), v->frameNumber);
+      // look again for marker
+      state = 11;
+    }
+    v->lock.unlock();
+    
     break;
   }
   case 31: // check if movement is finished
