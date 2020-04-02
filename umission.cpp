@@ -366,18 +366,21 @@ bool UMission::mission1(int &state)
   bool finished = false;
   // First commands to send to robobot in given mission
   // (robot sends event 1 after driving 1 meter)):
+  bool lineFlag;
+  bool firstLine = false;
   switch (state)
   {
   case 0:
     // tell the operatior what to do
     printf("# started mission 7: Roundabout.\n");
-    system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+    system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &");
     bridge->send("oled 5 looking 4 robot");
-    state=1;
+    state = 1;
     break;
   case 1:
-    if (bridge->joy->button[BUTTON_GREEN]){
-      state=10;
+    if (bridge->joy->button[BUTTON_GREEN])
+    {
+      state = 10;
       //state=21; //DEBUG, SKIP FIRST PART
     }
     break;
@@ -447,11 +450,13 @@ bool UMission::mission1(int &state)
   }
   case 22:
   {
-    if(bridge->irdist->dist[1] < 0.15){
+    if (bridge->irdist->dist[1] < 0.15)
+    {
       state = 23;
     }
 
-    if(bridge->event->isEventSet(2)){
+    if (bridge->event->isEventSet(2))
+    {
       lineFlag = true;
       state = 23;
     }
@@ -475,11 +480,14 @@ bool UMission::mission1(int &state)
   }
   case 24:
   {
-    if(bridge->event->isEventSet(3)){
+    if (bridge->event->isEventSet(3))
+    {
       state = 21;
 
-      if (lineFlag){
-        if (firstLine){
+      if (lineFlag)
+      {
+        if (firstLine)
+        {
           state = 31;
         }
         firstLine = true;
@@ -510,7 +518,8 @@ bool UMission::mission1(int &state)
   }
   case 32:
   {
-    if(bridge->event->isEventSet(4)){
+    if (bridge->event->isEventSet(4))
+    {
       state = 33;
     }
     break;
@@ -533,7 +542,7 @@ bool UMission::mission1(int &state)
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(5);
-    
+
     state = 99;
     break;
   }
