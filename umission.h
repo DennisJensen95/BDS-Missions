@@ -62,6 +62,10 @@ private:
   /** logfile for mission state */
   FILE *logMission = NULL;
 
+  // State variables for roundabout mission 13
+  bool firstLine = false;
+  bool lineFlag = false;
+
 public:
   /**
    * Constructor */
@@ -127,6 +131,9 @@ private:
   bool mission8(int &state);
   bool mission9(int &state);
   bool mission10(int &state);
+  bool mission11(int &state);
+  bool mission12(int &state);
+  bool mission13(int &state);
 
 private:
   /**
