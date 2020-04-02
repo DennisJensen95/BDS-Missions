@@ -366,8 +366,6 @@ bool UMission::mission1(int &state)
   bool finished = false;
   // First commands to send to robobot in given mission
   // (robot sends event 1 after driving 1 meter)):
-  bool lineFlag;
-  bool firstLine = false;
   switch (state)
   {
   case 0:
@@ -490,7 +488,10 @@ bool UMission::mission1(int &state)
         {
           state = 31;
         }
-        firstLine = true;
+        else
+        {
+          firstLine = true;
+        }
       }
     }
     break;
