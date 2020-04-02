@@ -65,6 +65,7 @@ private:
 
   // used in mission roundabout
   bool lineFlag = false;
+  bool firstLine = false;
   
 public:
   /**

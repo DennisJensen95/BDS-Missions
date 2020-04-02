@@ -319,12 +319,15 @@ void UMission::runMission()
       }
     }
     if (bridge->joy->button[BUTTON_YELLOW])
-    { // yellow button -> make ArUco analysis
+    { /*// yellow button -> make ArUco analysis
       if (not cam->doArUcoAnalysis)
       {
         printf("UMission::runMission:: button 3 (yellow) pressed -> do ArUco\n");
         cam->doArUcoAnalysis = true;
-      }
+      }*/
+      play.setFile("../bruh.mp3");
+      play.setVolume(100); // % (0..100)
+      play.start();
     }
     // are we finished - event 0 disables motors (e.g. green button)
     if (bridge->event->isEventSet(0))
@@ -367,12 +370,17 @@ bool UMission::mission1(int &state)
   {
   case 0:
     // tell the operatior what to do
-      printf("# started mission 7: Roundabout.\n");
-      system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
-      bridge->send("oled 5 looking 4 robot");
+    printf("# started mission 7: Roundabout.\n");
+    system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+    bridge->send("oled 5 looking 4 robot");
+    state=1;
+    break;
+  case 1:
+    if (bridge->joy->button[BUTTON_GREEN]){
       state=10;
-      state=21; //DEBUG, SKIP FIRST PART
-      break;
+      //state=21; //DEBUG, SKIP FIRST PART
+    }
+    break;
   case 10:
   {
     int line = 0;
@@ -420,11 +428,11 @@ bool UMission::mission1(int &state)
     int line = 0;
     // continue along the line until the line is reached OR robot is seen
     // first drive a bit in case the front sensor just sees the gate
-    //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: xl>10, dist=0.1");
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1: dist=0.1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: dist=0.1");
+    //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1: dist=0.1"); //DEBUG WITHOUT LINE
     // then continue driving
-    //snprintf(lines[line++], MAX_LEN, ": xl>10");
-    snprintf(lines[line++], MAX_LEN, ": ir1<0.1");
+    snprintf(lines[line++], MAX_LEN, ": xl>10");
+    //snprintf(lines[line++], MAX_LEN, ": ir1<0.1"); //DEBUG WITHOUT LINE
     // create event 2
     snprintf(lines[line++], MAX_LEN, "event=2, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -471,33 +479,67 @@ bool UMission::mission1(int &state)
       state = 21;
 
       if (lineFlag){
-        state = 31;
+        if (firstLine){
+          state = 31;
+        }
+        firstLine = true;
       }
     }
     break;
   }
-  case 31: //robot has reached the first line
+  case 31: //robot has reached the second line
   {
     int line = 0;
-    //TEST -> turn robot left and exit roundabout
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=90.0");
+    // turn robot right and enter middle of roundabout
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, tr=0.0: turn=-90.0");
     // drive a bit
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: dist=0.3");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=0, white=1: dist=1.1");
+    //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1: dist=0.4"); //DEBUG WITHOUT LINE
+    // create event 4
+    snprintf(lines[line++], MAX_LEN, "event=4, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 4 is cleared
+    bridge->event->isEventSet(4);
+    //
+    // go wait for finished
+    state = 32;
+    break;
+  }
+  case 32:
+  {
+    if(bridge->event->isEventSet(4)){
+      state = 33;
+    }
+    break;
+  }
+  case 33: //wait for regbot to pass
+  {
+    int line = 0;
+    // stop until regbot is detected
+    snprintf(lines[line++], MAX_LEN, "vel=0: ir2 < 0.2"); //0.3
+    // stop a little bit longer
+    snprintf(lines[line++], MAX_LEN, ": time=2");
+    // drive towards line
+    snprintf(lines[line++], MAX_LEN, "vel=0.6, acc=1, edgel=0, white=1: dist=1.0");
+    //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1: dist=0.4"); //DEBUG WITHOUT LINE
+    // create event 5
+    snprintf(lines[line++], MAX_LEN, "event=5, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
     snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
-    bridge->event->isEventSet(1);
-    //
-    // go wait for finished
+    bridge->event->isEventSet(5);
+    
     state = 99;
+    break;
   }
   case 99:
     // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
+    if (bridge->event->isEventSet(5))
     { // finished first drive
       state = 999;
     }
