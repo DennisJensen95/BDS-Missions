@@ -869,14 +869,24 @@ bool UMission::mission8(int &state)
   switch (state)
   {
   case 0:
+    // tell the operatior what to do
+      printf("# started mission 7-10-8: Race start -> through axe gate -> end race.\n");
+      system("espeak \"looking for robot\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+      bridge->send("oled 5 looking 4 robot");
+      state=10;
+      break;
+  case 10:
     int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // Before starting race, we want to make sure that the path is clear
+    snprintf(lines[line++], MAX_LEN, "vel=0, acc=1, edger=1, white=1: xl>55" );
+    // Concluding upon the tests we made at DTU, it is possible to make it through the axe gate
+    // Reaching through the first gate checker
+    snprintf(lines[line++], MAX_LEN, "vel=1.1, acc=1, edger=1, white=1: x2>20");
+    // Going through the end of the race through a second gate checker.
+    snprintf(lines[line++], MAX_LEN, "vel=1.1, acc=1, edger=1, white=1: x2>20");
     // send the 6 lines to the REGBOT
+    snprintf(lines[line++], MAX_LEN, "vel=1.1, acc=1, edger=1, white=1: x2>20");
+    // 
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
