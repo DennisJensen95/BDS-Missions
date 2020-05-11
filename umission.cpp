@@ -360,13 +360,13 @@ bool UMission::mission1(int &state)
     if (bridge->joy->button[BUTTON_GREEN])
       state = 10;
     break;
-  case 10: // follow black line for 0.5 m at a lower velocity
-    snprintf(lines[0], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=1");
+  case 10: // follow white line for 0.5 m at a lower velocity
+    snprintf(lines[0], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=1 : time=1");
     // increase velocity and follow line until right IR sensor detects the guillotine gate
     // gates are 45 cm wide and robot is approx 32 cm wide giving ~7 cm on either side
-    snprintf(lines[1], MAX_LEN, "vel=0.6, acc=1, edgel=-1, white=1 : ir1 < 0.15");
+    snprintf(lines[1], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=1 : ir1 < 0.15");
     //drive 25 cm to steer clear of the gate
-    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=0 : dist=0.20");
+    snprintf(lines[2], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=0 : dist=0.05"); //0.20
     // stop and create an event when arrived at this point
     snprintf(lines[3], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -385,6 +385,28 @@ bool UMission::mission1(int &state)
     featureCnt = 0;
     break;
   case 11:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      state = 12;
+    }
+    break;
+  case 12:
+    snprintf(lines[0], MAX_LEN, "vel=0: dist=1");
+    // stop and create an event when arrived at this point
+    snprintf(lines[3], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[4], MAX_LEN, ": dist=1");
+    // send the 4 lines to the REGBOT
+    sendAndActivateSnippet(lines, 3);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 1\n", state);
+    system("espeak \"code snippet 1.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 1");
+
+  case 13:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
     { // finished first drive
