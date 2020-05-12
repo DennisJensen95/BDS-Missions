@@ -244,10 +244,12 @@ void UMission::runMission()
         switch (mission)
         {
         case 1: // running auto mission
-          ended = mission1(missionState);
+          //ended = mission1(missionState);
+          ended = true;
           break;
         case 2:
-          ended = mission2(missionState);
+          //ended = mission2(missionState);
+          ended = true;
           break;
         case 3:
           ended = mission3(missionState);
@@ -336,7 +338,6 @@ void UMission::runMission()
 
 /**
  * Run mission
- * GUILLOTINE
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -608,7 +609,6 @@ bool UMission::mission2(int &state)
 
 /**
  * Run mission
- * THE SEE SAW
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -620,11 +620,20 @@ bool UMission::mission3(int &state)
   // (robot sends event 1 after driving 1 meter)):
   switch (state)
   {
-  case 0:
+  case 0: // start
+    // tell the operatior what to do
+    printf("# started mission 1.\n");
+    system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 looking 4 ball");
+    state = 10;
+    break;
+  case 10:
   {
     int line = 0;
+    // raise arm
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-600");
     // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3: dist=0.5");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -633,27 +642,136 @@ bool UMission::mission3(int &state)
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
-    // tell the operator
-    printf("# case=%d sent mission snippet 10\n", state);
-    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 10");
-    //
-    // go to wait for finished
+    usleep(10000);
+    // wait for finished driving first part)
     state = 11;
-    featureCnt = 0;
+  }
+
+  case 11: // start ball analysis
+  {
+    
+    if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2 * 180 / M_PI))
+    { // finished first drive and turnrate is zero'ish
+      state = 12;
+      // wait further 30ms - about one camera frame at 30 FPS
+      usleep(35000);
+      // start ball analysis
+      printf("# started new ball analysis\n");
+      cam->doFindBall = true;
+    } /*else{ //DEBUG
+        printf("Motor still running!\n");
+        usleep(35000);
+      }*/
     break;
   }
-  case 11:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { // finished first drive
+  case 12: // check if ball is found
+    if (not cam->doFindBall)
+    { // ball processing finished
+      if (cam->ballFound == 0)
+      { // found a single ball
+        state = 30;
+        // tell the operator
+        printf("# case=%d found ball\n", state);
+        system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &");
+        bridge->send("oled 5 found ball");
+      }
+      else
+      { // yolo a bit more
+        //printf("# case=%d NO ball found\n", state); //DEBUG
+        state = 20;
+      }
+    }
+    break;
+  case 20: // adjust position and go back
+  {
+    state = 11;
+    break;
+  }
+  case 30: // move to ball
+  {
+    FindBall *v = cam->findBalls->returnDataPointer();
+
+    float xm = v->ballPosition.at<float>(0,0);
+    float ym = v->ballPosition.at<float>(0,1);
+    float hm = v->ballAngle;
+
+    // stop some distance in front of marker
+    float dx = 0.3; // distance to stop in front of marker
+    float dy = -0.05; // distance to the left of marker
+    xm += - dx*cos(hm) + dy*sin(hm);
+    ym += - dx*sin(hm) - dy*cos(hm);
+    // limits
+    float acc = 1.0; // max allowed acceleration - linear and turn
+    float vel = 0.3; // desired velocity
+    // set parameters
+    // end at 0 m/s velocity
+    UPose2pose pp4(xm, ym, hm, 0.0);
+    printf("\n");
+    // calculate turn-straight-turn (Angle-Line-Angle)  manoeuvre
+    bool isOK = pp4.calculateALA(vel, acc);
+    // use only if distance to destination is more than 3cm
+    if (isOK and (pp4.movementDistance() > 0.03))
+    { // a solution is found - and more that 3cm away.
+      // debug print manoeuvre details
+      pp4.printMan();
+      printf("\n");
+      // debug end
+      int line = 0;
+      if (pp4.initialBreak > 0.01)
+      { // there is a starting straight part
+        snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", 
+                  pp4.straightVel, acc, pp4.straightVel);
+      }
+      snprintf(lines[line++], MAX_LEN,   "vel=%.3f,tr=%.3f :turn=%.1f", 
+                pp4.straightVel, pp4.radius1, pp4.turnArc1 * 180 / M_PI);
+      snprintf(lines[line++], MAX_LEN,   ":dist=%.3f", pp4.straightDist);
+      snprintf(lines[line++], MAX_LEN,   "tr=%.3f :turn=%.1f", 
+                pp4.radius2, pp4.turnArc2 * 180 / M_PI);
+      if (pp4.finalBreak > 0.01)
+      { // there is a straight break distance
+        snprintf(lines[line++], MAX_LEN,   "vel=0 : time=%.2f", 
+                  sqrt(2*pp4.finalBreak));
+      }
+      snprintf(lines[line++], MAX_LEN,   "vel=0, event=2: dist=1");
+      sendAndActivateSnippet(lines, line);
+      // make sure event 2 is cleared
+      bridge->event->isEventSet(2);
+      //
+      // debug
+      for (int i = 0; i < line; i++)
+      { // print sent lines
+        printf("# line %d: %s\n", i, lines[i]);
+      }
+      // debug end
+      // tell the operator
+      printf("# Sent mission snippet to marker (%d lines)\n", line);
+      //system("espeak \"code snippet to marker.\" -ven+f4 -s130 -a20 2>/dev/null &"); 
+      bridge->send("oled 5 code to marker");
+      // wait for movement to finish
+      state = 31;
+    }
+    else
+    { // no marker or already there
+      printf("# No need to move, just %.2fm, frame %d\n", 
+              pp4.movementDistance(), v->frameNumber);
+      // look again for marker
+      state = 11;
+    }
+    v->lock.unlock();
+    
+    break;
+  }
+  case 31: // check if movement is finished
+    // wait for event 2 (send when finished driving)
+    if (bridge->event->isEventSet(2))
+    { // stop
       state = 999;
     }
     break;
-  case 999:
+  case 999: // end
   default:
-    printf("mission 3 ended \n");
-    bridge->send("oled 5 \"mission 3 ended.\"");
+    printf("mission 1 ended \n");
+    bridge->send("oled 5 \"mission 1 ended.\"");
     finished = true;
     break;
   }
