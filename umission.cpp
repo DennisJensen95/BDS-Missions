@@ -616,11 +616,13 @@ bool UMission::mission2(int &state)
 bool UMission::mission3(int &state)
 {
   bool finished = false;
+
   // First commands to send to robobot in given mission
   // (robot sends event 1 after driving 1 meter)):
   switch (state)
   {
   case 0: // start
+    caseCounter = 0;
     // tell the operatior what to do
     printf("# started mission 3.\n");
     system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &");
@@ -660,16 +662,13 @@ bool UMission::mission3(int &state)
       // start ball analysis
       printf("# started new ball analysis\n");
       cam->doFindBall = true;
-    } /*else{ //DEBUG
-        printf("Motor still running!\n");
-        usleep(35000);
-      }*/
+    }
     break;
   }
-  case 20: // check if ball is found
-    if (not cam->doFindBall)
-    { // ball processing finished
-      if (cam->ballFound == 0)
+  case 20:
+    if (not cam->doFindBall) // ball processing finished
+    {
+      if (false)//(cam->ballFound == 0)
       { // found a single ball
         state = 30;
         // tell the operator
@@ -678,17 +677,51 @@ bool UMission::mission3(int &state)
         bridge->send("oled 5 found ball");
       }
       else
-      { // yolo a bit more
-        //printf("# case=%d NO ball found\n", state); //DEBUG
-        state = 21;
+      { // start turning procedure
+        if (caseCounter < 12){
+          printf("%d\n", caseCounter);
+          state = 21;
+        }
+        else{
+          state = 999;
+        }
       }
     }
     break;
-  case 21: // go back new analysis
+  case 21:
   {
-    state = 12;
+    float heading = (bridge->pose->h)*180.0/M_PI;
+
+    int line = 0;
+    // stop a few seconds
+    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+    // turn 30 degrees to the right
+    snprintf(lines[line++], MAX_LEN, "topos=0, vel=0.1, acc=0.6, head=%.1f: turn=-40, time=2", heading-40.0);
+    // create event 1
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d turning robot\n", state);
+    bridge->send("oled 5 turning...");
+    //
+    // go to wait for finished
+    state = 22;
     break;
   }
+  case 22:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
+      printf("increment counter...\n");
+      caseCounter++;
+      state = 12;
+    }
+    break;
   case 30: // move to ball
   {
     FindBall *v = cam->findBalls->returnDataPointer();
@@ -699,7 +732,7 @@ bool UMission::mission3(int &state)
 
     // stop some distance in front of marker
     float dx = 0.3; // distance to stop in front of marker
-    float dy = -0.05; // distance to the left of marker
+    float dy = 0.1; // distance to the left of marker
     xm += - dx*cos(hm) + dy*sin(hm);
     ym += - dx*sin(hm) - dy*cos(hm);
     // limits

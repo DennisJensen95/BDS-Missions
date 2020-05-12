@@ -64,6 +64,8 @@ private:
   /** logfile for mission state */
   FILE *logMission = NULL;
 
+  int caseCounter = 0;
+
 public:
   /**
    * Constructor */

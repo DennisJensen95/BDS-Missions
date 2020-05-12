@@ -97,6 +97,10 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
 
     cv::HoughCircles(thresh, circles, cv::HOUGH_GRADIENT, 1, thresh.rows / 2, 30, 15, 10, 200);
 
+    /*printf("SAVE SHIT\n");
+    cv::imwrite( "frame.jpg", frame);
+    cv::imwrite( "thresh.jpg", thresh);*/
+
     if (circles.size() == 1)
     {
         cv::Vec3i c = circles[0];
