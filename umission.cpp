@@ -421,7 +421,7 @@ bool UMission::mission1(int &state)
 
     // stop some distance in front of marker
     float dx = 0.3; // distance to stop in front of marker
-    float dy = 0.0; // distance to the left of marker
+    float dy = -0.05; // distance to the left of marker
     xm += - dx*cos(hm) + dy*sin(hm);
     ym += - dx*sin(hm) - dy*cos(hm);
     // limits
