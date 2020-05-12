@@ -622,7 +622,7 @@ bool UMission::mission3(int &state)
   {
   case 0: // start
     // tell the operatior what to do
-    printf("# started mission 1.\n");
+    printf("# started mission 3.\n");
     system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &");
     bridge->send("oled 5 looking 4 ball");
     state = 10;
@@ -632,8 +632,6 @@ bool UMission::mission3(int &state)
     int line = 0;
     // raise arm
     snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-600");
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0.3: dist=0.5");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -642,17 +640,21 @@ bool UMission::mission3(int &state)
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
-    usleep(10000);
-    // wait for finished driving first part)
+    // wait for finished setting servo
     state = 11;
   }
-
-  case 11: // start ball analysis
+  case 11: 
+    // wait for event 1
+    if (bridge->event->isEventSet(1))
+    { // continue
+      state = 12;
+    }
+    break;
+  case 12: // start ball analysis
   {
-    
     if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2 * 180 / M_PI))
     { // finished first drive and turnrate is zero'ish
-      state = 12;
+      state = 20;
       // wait further 30ms - about one camera frame at 30 FPS
       usleep(35000);
       // start ball analysis
@@ -664,7 +666,7 @@ bool UMission::mission3(int &state)
       }*/
     break;
   }
-  case 12: // check if ball is found
+  case 20: // check if ball is found
     if (not cam->doFindBall)
     { // ball processing finished
       if (cam->ballFound == 0)
@@ -678,13 +680,13 @@ bool UMission::mission3(int &state)
       else
       { // yolo a bit more
         //printf("# case=%d NO ball found\n", state); //DEBUG
-        state = 20;
+        state = 21;
       }
     }
     break;
-  case 20: // adjust position and go back
+  case 21: // go back new analysis
   {
-    state = 11;
+    state = 12;
     break;
   }
   case 30: // move to ball
