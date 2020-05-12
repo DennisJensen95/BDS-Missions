@@ -70,8 +70,8 @@ public:
   // detected ArUco markers
   ArUcoVals *arUcos = NULL;
   // camera position on robot
-  cv::Vec3d camPos = {0.03, 0.03, 0.27};        /// x=fwd, y=left, z=up
-  cv::Vec3d camRot = {0, 10 * M_PI / 180.0, 0}; /// roll, tilt, yaw (right hand rule, radians)
+  cv::Vec3d camPos = {0.14, 0.00, 0.23};        /// x=fwd, y=left, z=up
+  cv::Vec3d camRot = {0, 20 * M_PI / 180.0, 0}; /// roll, tilt, yaw (right hand rule, radians)
   cv::Mat cam2robot;
   //
   /** camera matrix is a 3x3 matrix (raspberry PI typical values)
