@@ -631,7 +631,7 @@ bool UMission::mission3(int &state)
   {
     int line = 0;
     // raise arm
-    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-600");
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -767,6 +767,35 @@ bool UMission::mission3(int &state)
     // wait for event 2 (send when finished driving)
     if (bridge->event->isEventSet(2))
     { // stop
+      state = 40;
+    }
+    break;
+  case 40:
+  {
+    int line = 0;
+    // yolo
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=500: time=2");
+    // create event 1
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d sent mission snippet 10\n", state);
+    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
+    bridge->send("oled 5 code snippet 10");
+    
+    // go to wait for finished
+    state = 41;
+    break;
+  }
+  case 41:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
       state = 999;
     }
     break;
