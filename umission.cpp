@@ -441,7 +441,7 @@ bool UMission::mission1(int &state)
       printf("\n");
       // debug end
       int line = 0;
-      snprintf(lines[line++], MAX_LEN,   "servo=3, pservo=-300");
+      //snprintf(lines[line++], MAX_LEN,   "servo=3, pservo=-300");
       if (pp4.initialBreak > 0.01)
       { // there is a starting straight part
         snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", 
