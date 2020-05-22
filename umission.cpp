@@ -633,7 +633,9 @@ bool UMission::mission3(int &state)
   {
     int line = 0;
     // raise arm
-    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300");
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
+    // open grabber
+    snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -668,7 +670,7 @@ bool UMission::mission3(int &state)
   case 20:
     if (not cam->doFindBall) // ball processing finished
     {
-      if (false)//(cam->ballFound == 0)
+      if (cam->ballFound == 0)
       { // found a single ball
         state = 30;
         // tell the operator
@@ -779,9 +781,9 @@ bool UMission::mission3(int &state)
       }
       // debug end
       // tell the operator
-      printf("# Sent mission snippet to marker (%d lines)\n", line);
+      printf("# Sent mission snippet to ball (%d lines)\n", line);
       //system("espeak \"code snippet to marker.\" -ven+f4 -s130 -a20 2>/dev/null &"); 
-      bridge->send("oled 5 code to marker");
+      bridge->send("oled 5 code to ball");
       // wait for movement to finish
       state = 31;
     }
@@ -806,8 +808,16 @@ bool UMission::mission3(int &state)
   case 40:
   {
     int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=500: time=2");
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // close grabber
+    snprintf(lines[line++], MAX_LEN, "servo=2, pservo=-200, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // raise arm
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
