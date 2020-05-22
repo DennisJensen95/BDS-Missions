@@ -680,7 +680,7 @@ bool UMission::mission3(int &state)
       }
       else
       { // start turning procedure
-        if (caseCounter < 12){
+        if (caseCounter < 0){
           printf("%d\n", caseCounter);
           state = 21;
         }

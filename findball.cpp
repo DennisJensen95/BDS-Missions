@@ -73,7 +73,7 @@ void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
-    const float ballSqaureDimensions = 0.041; //4.1 cm diameter
+    const float ballSqaureDimensions = 0.04; //4.1 cm diameter
     vector<vector<cv::Point2f>> ballCorners;
     vector<cv::Point2f> corners;
 
@@ -83,23 +83,25 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     t.now();
 
     // matrix to store gray picture
-    cv::Mat hsv_img;
-    cv::Mat thresh;
+    cv::Mat gray;
 
+    // vector to store the found circle
     vector<cv::Vec3f> circles;
-    cv::cvtColor(frame, hsv_img, cv::COLOR_BGR2HSV);
-    cv::medianBlur(hsv_img, hsv_img, 25);
 
-    erode(hsv_img, hsv_img, 4);
-    dilate(hsv_img, hsv_img, 4);
+    // convert to gray scale
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    
+    // stretch colour spectrum
+    cv::equalizeHist(gray, gray);
 
-    inRange(hsv_img, cv::Scalar(7, 35, 78), cv::Scalar(30, 225, 240), thresh);
+    // blur image for better processing
+    cv::medianBlur(gray, gray, 21);
 
-    cv::HoughCircles(thresh, circles, cv::HOUGH_GRADIENT, 1, thresh.rows / 2, 30, 15, 10, 200);
+    // do hough circles
+    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 20, 20, 50);
 
-    /*printf("SAVE SHIT\n");
-    cv::imwrite( "frame.jpg", frame);
-    cv::imwrite( "thresh.jpg", thresh);*/
+    // save image
+    cv::imwrite("frame.jpg", frame);
 
     if (circles.size() == 1)
     {
