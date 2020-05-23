@@ -90,6 +90,7 @@ public:
     static const int MAX_VAL_CNT = 1;
 
     int doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime);
+    int doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime imTime);
 
     void makeCamToRobotTransformation();
 

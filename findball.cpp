@@ -13,6 +13,7 @@
 #include "utime.h"
 #include "ucamera.h"
 #include "findball.h"
+#include "cloud_process.h"
 
 using namespace std;
 
@@ -70,6 +71,45 @@ void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
 ////////////// FindBalls class ////////////////////
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
+
+int FindBalls::doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime imTime)
+{
+    CloudProcess proc;
+    vector<vector<cv::Point2f>> ballCorners;
+    vector<cv::Vec3d> rotationVectors, translationVectors;
+    const float ballSqaureDimensions = 0.041;
+
+    cv::imwrite("frame.jpg", frame);
+
+    system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/");
+    int listen = 10;
+    const char *ip = "localhost"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at martins house)
+    ballCorners = proc.wait_for_corners(listen, ip);
+
+    printf("Ball corners:\n");
+    for (int i = 0; i < 4; i++)
+    {
+        printf("(%.2f,%.2f)\t\t", ballCorners[0][i].x, ballCorners[0][i].y);
+    }
+
+    cv::aruco::estimatePoseSingleMarkers(ballCorners,
+                                         ballSqaureDimensions,
+                                         cam->cameraMatrix,
+                                         cam->distortionCoefficients,
+                                         rotationVectors,
+                                         translationVectors);
+    // Data class returned owned by FindBalls
+    FindBall *v = FindBalls::returnDataPointer();
+    v->lock.lock();
+    v->imageTime = imTime;
+    v->frameNumber = frameNumber;
+    v->rVec = rotationVectors[0];
+    v->tVec = translationVectors[0];
+    v->ballToRobotCoordinate(cam->cam2robot);
+    v->lock.unlock();
+
+    return EXIT_SUCCESS;
+}
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {

@@ -367,6 +367,7 @@ bool UMission::mission1(int &state)
   // First commands to send to robobot in given mission
   // (robot sends event 1 after driving 1 meter)):
   int line = 0;
+
   switch (state)
   {
   case 0:
