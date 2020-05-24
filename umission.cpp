@@ -636,6 +636,8 @@ bool UMission::mission3(int &state)
     snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
     // open grabber
     snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
+    // wait 4 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 4");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -759,11 +761,20 @@ bool UMission::mission3(int &state)
         snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", 
                   pp4.straightVel, acc, pp4.straightVel);
       }
-      snprintf(lines[line++], MAX_LEN,   "vel=%.3f,tr=%.3f :turn=%.1f", 
-                pp4.straightVel, pp4.radius1, pp4.turnArc1 * 180 / M_PI);
-      snprintf(lines[line++], MAX_LEN,   ":dist=%.3f", pp4.straightDist);
-      snprintf(lines[line++], MAX_LEN,   "tr=%.3f :turn=%.1f", 
-                pp4.radius2, pp4.turnArc2 * 180 / M_PI);
+
+      float heading = (bridge->pose->h)*180.0/M_PI;
+      // stop a few seconds
+      snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+      // turn 
+      snprintf(lines[line++], MAX_LEN, "topos=0, vel=0.3, acc=0.6, head=%.1f: turn=%.1f", heading + pp4.turnArc1 * 180 / M_PI, pp4.turnArc1 * 180 / M_PI);
+      // stop a few seconds
+      snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+      // drive forward
+      snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", pp4.straightVel, acc, pp4.straightDist);
+      // turn 
+      snprintf(lines[line++], MAX_LEN, "topos=0, vel=0.3, acc=0.6, head=%.1f: turn=%.1f", heading + pp4.turnArc1 * 180 / M_PI + pp4.turnArc2 * 180 / M_PI, pp4.turnArc2 * 180 / M_PI);
+      // stop a few seconds
+      snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
       if (pp4.finalBreak > 0.01)
       { // there is a straight break distance
         snprintf(lines[line++], MAX_LEN,   "vel=0 : time=%.2f", 
@@ -818,6 +829,16 @@ bool UMission::mission3(int &state)
     snprintf(lines[line++], MAX_LEN, ": time = 2");
     // raise arm
     snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 5");
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // open grabber
+    snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
+    // wait 4 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 4");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived

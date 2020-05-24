@@ -5,6 +5,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
+#include <unistd.h>
+#include <stdlib.h>
 //#include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/aruco.hpp>
@@ -73,6 +75,8 @@ void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
+    bool debug = true;
+
     const float ballSqaureDimensions = 0.04; //4.1 cm diameter
     vector<vector<cv::Point2f>> ballCorners;
     vector<cv::Point2f> corners;
@@ -82,26 +86,75 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     UTime t;
     t.now();
 
+    int erosion_size = 11;
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT,
+        cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+        cv::Point(erosion_size, erosion_size));
+
     // matrix to store gray picture
-    cv::Mat gray;
+    cv::Mat gray,hsv,frame_thresh;
 
     // vector to store the found circle
     vector<cv::Vec3f> circles;
 
     // convert to gray scale
-    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    //cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     
     // stretch colour spectrum
-    cv::equalizeHist(gray, gray);
+    //cv::equalizeHist(gray, gray);
 
     // blur image for better processing
-    cv::medianBlur(gray, gray, 21);
+    //cv::medianBlur(gray, gray, 11);
+    cv::medianBlur(hsv, hsv, 11);
 
-    // do hough circles
-    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 20, 20, 50);
+    inRange(hsv, cv::Scalar(7, 95, 90), cv::Scalar(21, 200, 241), frame_thresh); //ball 
+
+    if(debug){
+        cv::imwrite("thresh.jpg", frame_thresh);
+    }
+
+    // erosion removes noise
+    cv::erode(frame_thresh, frame_thresh, cv::Mat(), cv::Point(-1, -1), 5); // cv::Mat() gives a 3x3 square structuring element
+    /// dilate to create square around ball
+    cv::dilate(frame_thresh, frame_thresh, element, cv::Point(-1, -1), 5);
+
+    cv::bitwise_and(frame, frame, gray, frame_thresh);
+
+    cv::cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
 
     // save image
-    cv::imwrite("frame.jpg", frame);
+    if(debug){
+        cv::imwrite("gray.jpg", gray);
+    }
+
+    // do hough circles
+    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 20, 10, 50);
+
+    // save image
+    if(debug){
+        cv::imwrite("frame.jpg", frame);
+    }
+
+    sleep(1);
+    system("scp frame.jpg dennis@192.168.1.149:~/Images/frame.jpg");
+
+
+    // draw the circles detected
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radius = cvRound(circles[i][2]);
+        // circle center
+        cv::circle( frame, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        // circle outline
+        cv::circle( frame, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+    }
+
+    // save image with circles
+    if(debug){
+        cv::imwrite("circles.jpg", frame);
+    }
 
     if (circles.size() == 1)
     {
