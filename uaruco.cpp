@@ -268,6 +268,15 @@ void ArUcoVals::closeArucoLog()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+vector<int> ArUcoVals::FindMarkerID(cv::Mat frame, int frameNumber, UTime imTime){
+  vector<int> markerIds;
+  vector<vector<cv::Point2f>> markerCorners;
+  cv::Ptr<cv::aruco::Dictionary> markerDictionary = cv::aruco::getPredefinedDictionary(cv::aruco::PREDEFINED_DICTIONARY_NAME::DICT_4X4_100);
+  cv::aruco::detectMarkers(frame, markerDictionary, markerCorners, markerIds);
+
+  return markerIds;
+}
+
 int ArUcoVals::doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
   cv::Mat frameAnn;

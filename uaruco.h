@@ -200,6 +200,14 @@ public:
    * */
   int doArUcoProcessing(cv::Mat frame, int frameNumber, UTime imTime);
   /**
+   * Investigate frame for ArUco markers and return marker ID
+   * \param frame is the image (in RGB format) to investigate
+   * \param framenumber is the image number for the frame
+   * \param imTime is time for frame capture
+   * \returns number of codes found.
+   * */
+  vector<int> FindMarkerID(cv::Mat frame, int frameNumber, UTime imTime);
+  /**
    * conver position and rotation of camera to 
    * coordinate conversion matrix 
    * \param camPos (position vector)

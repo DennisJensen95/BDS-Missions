@@ -252,13 +252,11 @@ void UMission::runMission()
           ended = true;
           break;
         case 3:
-          ended = mission3(missionState);
+          //ended = mission3(missionState);
+          ended = true;
           break;
         case 4:
           ended = mission4(missionState);
-          break;
-        case 5:
-          ended = mission5(missionState);
           break;
         default:
           // no more missions - end everything
@@ -1308,7 +1306,7 @@ bool UMission::mission3(int &state)
     // wait 2 seconds
     snprintf(lines[line++], MAX_LEN, "vel=0: time = 1");
     // drive until line crossing
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: lv>0");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, white=1: lv>0");
     // drive until after crossing
     snprintf(lines[line++], MAX_LEN, "vel=0.1, acc=1: dist=0.1");
     // stop a few seconds
@@ -1392,7 +1390,7 @@ bool UMission::mission3(int &state)
 
 /**
  * Run mission
- * THE RAMP PART 2 **NOT TESTED**
+ * Aruco **NOT TESTED**
  * \param state is kept by caller, but is changed here
  *              therefore defined as reference with the '&'.
  *              State will be 0 at first call.
@@ -1405,10 +1403,80 @@ bool UMission::mission4(int &state)
   switch (state)
   {
   case 0:
+    // tell the operatior what to do
+    printf("# started mission 4.\n");
+    system("espeak \"looking for ArUco\" -ven+f4 -s130 -a5 2>/dev/null &"); 
+    bridge->send("oled 5 looking 4 ArUco");
+    caseCounter = 0;
+    state=11;
+    break;
+  case 11:
+    // wait for finished driving first part)
+    if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2*180/M_PI))
+    { // finished first drive and turnrate is zero'ish
+      state = 12;
+      // wait further 30ms - about one camera frame at 30 FPS
+      usleep(35000);
+      // start aruco analysis 
+      printf("# started new ArUco analysis\n");
+      cam->doArUcoAnalysis = true;
+    }
+    break;
+  case 12:
   {
+    if (not cam->doArUcoAnalysis)
+    { // aruco processing finished
+      vector<int> markerIds = cam->markerIds;
+      if(markerIds.size()>1)
+      {
+        printf("Found more than one marker\n");
+        if(caseCounter++ > 3){
+          state = 999;
+        }
+        else
+        {
+          state = 11;
+        }
+      }
+      else
+      {
+        markerID = markerIds[0];
+        printf("Marker ID: %d\n", markerID);
+        state = 20;
+      }
+    }
+    break;
+  }
+  case 20:
+  {
+    float turnang = 0;
+    if(markerID == 0)
+    {
+      turnang = 90.0;
+    }
+    else if(markerID == 1){
+      turnang = -90.0;
+    }
+
     int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
+    // raise arm
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // stop a few seconds
+    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+    // turn
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc = 0.5, tr = 0.15 : turn = %.1f", turnang);
+    // stop a few seconds
+    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=300, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=480, vservo=1");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -1418,80 +1486,24 @@ bool UMission::mission4(int &state)
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d sent mission snippet 10\n", state);
-    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 10");
+    printf("# case=%d turning\n", state);
     //
     // go to wait for finished
-    state = 11;
-    featureCnt = 0;
+    state = 21;
     break;
   }
-  case 11:
-    // wait for event 1 (send when finished driving first part)
+  case 21:
+    // wait for event 1
     if (bridge->event->isEventSet(1))
-    { // finished first drive
+    { // finished drive
       state = 999;
     }
     break;
+  
   case 999:
   default:
     printf("mission 4 ended \n");
     bridge->send("oled 5 \"mission 4 ended.\"");
-    finished = true;
-    break;
-  }
-  return finished;
-}
-
-/**
- * Run mission
- * THE STAIRS
- * \param state is kept by caller, but is changed here
- *              therefore defined as reference with the '&'.
- *              State will be 0 at first call.
- * \returns true, when finished. */
-bool UMission::mission5(int &state)
-{
-  bool finished = false;
-  // First commands to send to robobot in given mission
-  // (robot sends event 1 after driving 1 meter)):
-  switch (state)
-  {
-  case 0:
-  {
-    int line = 0;
-    // yolo
-    snprintf(lines[line++], MAX_LEN, "vel=0");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
-    // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, line);
-    // make sure event 1 is cleared
-    bridge->event->isEventSet(1);
-    // tell the operator
-    printf("# case=%d sent mission snippet 10\n", state);
-    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 10");
-    //
-    // go to wait for finished
-    state = 11;
-    featureCnt = 0;
-    break;
-  }
-  case 11:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { // finished first drive
-      state = 999;
-    }
-    break;
-  case 999:
-  default:
-    printf("mission 6 ended \n");
-    bridge->send("oled 5 \"mission 6 ended.\"");
     finished = true;
     break;
   }

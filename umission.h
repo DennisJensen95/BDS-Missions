@@ -66,6 +66,7 @@ private:
 
   int caseCounter = 0;
   float savedHeading = 0;
+  int markerID;
 
 public:
   /**
@@ -126,7 +127,6 @@ private:
   bool mission2(int &state);
   bool mission3(int &state);
   bool mission4(int &state);
-  bool mission5(int &state);
 
 private:
   /**

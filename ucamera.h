@@ -60,6 +60,8 @@ public:
   int ballFound = 0;
   // flag to do ArUcoAnalysis
   bool doArUcoAnalysis = false;
+  // vector to store aruco marker ids
+  vector<int> markerIds;
   /// do loop-test (aruco log)
   bool doArUcoLoopTest = false;
   // opened OK

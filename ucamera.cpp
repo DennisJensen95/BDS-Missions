@@ -247,12 +247,8 @@ void UCamera::run()
         }
         if (doArUcoAnalysis)
         { // do ArUco detection
-          arUcos->doArUcoProcessing(im, imageNumber, imTime);
+          markerIds = arUcos->FindMarkerID(im, imageNumber, imTime);
           doArUcoAnalysis = false;
-          // robot pose is set after the processing, it is more likely that
-          // the pose is updated while processing.
-          // this is a bad idea, if robot is moving while grabbing images.
-          arUcos->setPoseAtImageTime(bridge->pose->x, bridge->pose->y, bridge->pose->h);
         }
         if (doArUcoLoopTest and arucoLoop > 0)
         { // timing test - 100 ArUco analysis on 100 frames
