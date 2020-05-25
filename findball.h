@@ -92,6 +92,7 @@ public:
 
     int doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime);
     int doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime imTime);
+    int doFindBallColor(cv::Mat frame, int framenumber, UTime imTime, int ballColor);
 
     void makeCamToRobotTransformation();
 

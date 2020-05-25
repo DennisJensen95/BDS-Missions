@@ -114,6 +114,8 @@ int FindBalls::doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime i
             return EXIT_FAILURE;
         }
     }
+    
+
 
     cv::aruco::estimatePoseSingleMarkers(ballCorners,
                                          ballSqaureDimensions,
@@ -266,5 +268,90 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         printf("Found more than one circle or none\n");
 
         return EXIT_FAILURE;
+    }
+}
+
+int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int ballColor)
+{   
+    vector<cv::Mat> frames;
+    vector<vector<cv::Point2f>> ballCorners;
+    vector<vector<cv::Point2d>> foundBallCorners;
+    vector<cv::Vec3d> rotationVectors, translationVectors;
+    const float ballSqaureDimensions = 0.041;
+
+        // Blue HSV values:     lower [110, 50, 50]
+        //                      upper [130, 255, 255]
+        // Orange HSV values:   lower [5, 50, 50]
+        //                      upper [15, 255, 255]
+
+        // Performing STD on image roi to detect color (using only channel with: Hue)
+    vector<cv::Mat> channels(3);
+    vector<double> SSD_vector;
+    vector<double> hueref_values = {120, 10}; // {Blue, Orange}
+
+    printf("Sending image\n");
+    cv::imwrite("frame.jpg", frame);
+
+    system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
+    int listen = 6;
+    const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
+    printf("Waiting for cloud processing\n");
+    ballCorners = wait_for_corners(listen, ip);
+
+        printf("Ball corners:\n");
+    for (int j = 0; j < ballCorners.size[0]; j++)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            printf("(%.2f,%.2f)\t\t", ballCorners[j][i].x, ballCorners[j][i].y);
+            if (ballCorners[j][i].x == 10 && ballCorners[j][i].y == 10) 
+            {
+                return EXIT_FAILURE;
+            } 
+        }
+
+        double width = ballCorners[j][1].x - ballCorners[j][0].x;
+        double height = ballCorners[j][2].y - ballCorners[j][0].y;
+        cv::Rect roi = cv::Rect(ballCorners[j][0].x, ballCorners[j][0].y, width, height);
+
+        cv::Mat frame_roi = frame(roi);
+        cv::cvtColor(frame_roi, frame_roi_hsv, cv::COLOR_BRG2HSV);
+        
+        cv::split(frames[i], channels)
+        double sum = 0;
+        for (int j = 0; j < channels[0].rows; j++)
+        {
+            for (int k = 0; k < channels[0].cols; k++)
+            {
+                sum += pow((channels[0].at<uchar>(j, k) - hueref_values[ballColor]),2);
+            }
+        }
+        printf("Sum: 2.f% \n", sum);
+        SSD_vector.push_back(sum);
+    }
+
+    auto mini = min_element(SSD_vector.begin(), SSD_vector.end());
+    int SSD_idx = distance(SSD_vector.begin(), iterator);
+
+    prinf("Found Ball colored: %d {0: Blue, 1: Orange} \n", SSD_idx);
+    foundBallCorners.push_back(ballCorners[SSD_idx]);
+
+    cv::aruco::estimatePoseSingleMarkers(foundBallCorners,
+                                         ballSqaureDimensions,
+                                         cam->cameraMatrix,
+                                         cam->distortionCoefficients,
+                                         rotationVectors,
+                                         translationVectors);
+    // Data class returned owned by FindBalls
+    FindBall *v = FindBalls::returnDataPointer();
+    v->lock.lock();
+    v->imageTime = imTime;
+    v->frameNumber = frameNumber;
+    v->rVec = rotationVectors[0];
+    v->tVec = translationVectors[0];
+    v->ballToRobotCoordinate(cam->cam2robot);
+    v->lock.unlock();
+
+    return EXIT_SUCCESS; 
     }
 }
