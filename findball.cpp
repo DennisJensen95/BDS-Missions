@@ -156,7 +156,9 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     //cv::medianBlur(gray, gray, 11);
     cv::medianBlur(hsv, hsv, 11);
 
-    inRange(hsv, cv::Scalar(1, 90, 100), cv::Scalar(20, 230, 240), frame_thresh); //ball 
+    //inRange(hsv, cv::Scalar(1, 90, 100), cv::Scalar(20, 230, 240), frame_thresh); //ball 
+    
+    inRange(hsv, cv::Scalar(3, 100, 130), cv::Scalar(20, 211, 210), frame_thresh); //25.05
 
     if(debug){
         cv::imwrite("thresh.jpg", frame_thresh);
