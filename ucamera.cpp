@@ -247,7 +247,7 @@ void UCamera::run()
         }
         if (doArUcoAnalysis)
         { // do ArUco detection
-          markerIds = arUcos->FindMarkerID(im, imageNumber, imTime);
+          markerId = arUcos->FindMarkerID(im, imageNumber, imTime);
           doArUcoAnalysis = false;
         }
         if (doArUcoLoopTest and arucoLoop > 0)
@@ -273,13 +273,12 @@ void UCamera::run()
           /*double test = 120.0;
           test = findBalls->deg2rad(test);
           printf("Angle: %.2f\n", test);*/
-
-          ballFound = findBalls->doFindBallProcessingCloud(im, imageNumber, imTime);
+          printf("%d\n", markerId);
+          ballFound = findBalls->doFindBallColor(im, imageNumber, imTime, markerId);
           if (ballFound != 0) {
               printf("\n NOTE: Did not find ball with neural net!\n");
               ballFound = findBalls->doFindBallProcessing(im, imageNumber, imTime);
           }
-
           //printf("ballFound = %d\n", ballFound); //DEBUG
           doFindBall = false;
         }

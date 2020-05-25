@@ -61,7 +61,7 @@ public:
   // flag to do ArUcoAnalysis
   bool doArUcoAnalysis = false;
   // vector to store aruco marker ids
-  vector<int> markerIds;
+  int markerId = 0;
   /// do loop-test (aruco log)
   bool doArUcoLoopTest = false;
   // opened OK

@@ -66,7 +66,6 @@ private:
 
   int caseCounter = 0;
   float savedHeading = 0;
-  int markerID;
 
 public:
   /**

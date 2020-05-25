@@ -52,9 +52,9 @@ void callback_received_corners(struct mosquitto *mosq, void *userdata,
                 corners.push_back(cv::Point2f(corner[0], corner[1]));
                 corner.clear();
             }
-
             if (corners.size() > 3) {
                 ballCorners.push_back(corners);
+                corners.clear();
                 received_corners = true;
             }
         }

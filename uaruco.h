@@ -204,9 +204,9 @@ public:
    * \param frame is the image (in RGB format) to investigate
    * \param framenumber is the image number for the frame
    * \param imTime is time for frame capture
-   * \returns number of codes found.
+   * \returns number of marker id found.
    * */
-  vector<int> FindMarkerID(cv::Mat frame, int frameNumber, UTime imTime);
+  int FindMarkerID(cv::Mat frame, int frameNumber, UTime imTime);
   /**
    * conver position and rotation of camera to 
    * coordinate conversion matrix 
