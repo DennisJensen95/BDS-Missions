@@ -279,6 +279,11 @@ void UCamera::run()
           printf("Angle: %.2f\n", test);*/
 
           ballFound = findBalls->doFindBallProcessing(im, imageNumber, imTime);
+          /*if (ballFound != 0) {
+              printf("\n NOTE: Did not find ball with neural net!\n");
+              findBalls->doFindBallProcessing(im, imageNumber, imTime);
+          }*/
+
           //printf("ballFound = %d\n", ballFound); //DEBUG
           doFindBall = false;
         }

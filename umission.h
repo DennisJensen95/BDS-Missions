@@ -65,6 +65,7 @@ private:
   FILE *logMission = NULL;
 
   int caseCounter = 0;
+  float savedHeading = 0;
 
 public:
   /**

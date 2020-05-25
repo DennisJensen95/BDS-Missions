@@ -15,6 +15,7 @@
 #include "utime.h"
 #include "ucamera.h"
 #include "findball.h"
+#include "cloud_process.h"
 
 using namespace std;
 
@@ -44,26 +45,30 @@ void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
     // combine with camera to robot coordinate conversion
     cv::Mat ball2robot = cam2robot * ball2Cam;
 
+    //cout << "ball2robot = " << endl << " "  << ball2robot << endl << endl;
+
     // get position of ball center
     cv::Vec4f zeroVec = {0, 0, 0, 1};
     ballPosition = ball2robot * cv::Mat(zeroVec);
-    // get position of 4cm in z-ball direction - out from ball
-    cv::Vec4f zeroVecZ = {0, 0, 0.04, 1};
-    cv::Mat ball4cmVecZ = ball2robot * cv::Mat(zeroVecZ);
+    // get position of 10cm in z-ball direction - out from ball
+    cv::Vec4f zeroVecZ = {0, 0, 0.1, 1};
+    cv::Mat ball10cmVecZ = ball2robot * cv::Mat(zeroVecZ);
     // get ball z-vector (in robot coordinate system)
-    cv::Mat dz4cm = ball4cmVecZ - ballPosition;
+    cv::Mat dz10cm = ball10cmVecZ - ballPosition;
 
     // ASSUMES VERTICAL BALL ?
     // rotation of marker Z vector in robot coordinates around robot Z axis
-    ballAngle = atan2(-dz4cm.at<float>(0, 1), -dz4cm.at<float>(0, 0));
+    ballAngle = atan2(-dz10cm.at<float>(0, 1), -dz10cm.at<float>(0, 0));
+    //ballAngle = -10/(float)180*M_PI;
+    //ballAngle = 0;
 
     // in plane distance sqrt(x^2 + y^2) only - using hypot(x,y) function
     distance2ball = hypotf(ballPosition.at<float>(0, 0), ballPosition.at<float>(0, 1));
     if (true)
     { // debug
-        printf("# Ball found at(%.3fx, %.3fy, %.3fz) (robot coo), plane dist %.3fm, angle %.3f rad, or %.1f deg\n",
+        printf("# Ball found at(%.3fx, %.3fy, %.3fz) (robot coo), plane dist %.3fm, angle %.3f rad, or %.1f deg, dz (x, y) values are in deg: (%.3f, %.3f)\n",
                ballPosition.at<float>(0, 0), ballPosition.at<float>(0, 1), ballPosition.at<float>(0, 2),
-               distance2ball, ballAngle, ballAngle * 180 / M_PI);
+               distance2ball, ballAngle, ballAngle * (float)180 / M_PI, dz10cm.at<float>(0, 0), dz10cm.at<float>(0, 1));
     }
 }
 
@@ -72,6 +77,49 @@ void FindBall::ballToRobotCoordinate(cv::Mat cam2robot)
 ////////////// FindBalls class ////////////////////
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
+
+int FindBalls::doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime imTime)
+{
+    vector<vector<cv::Point2f>> ballCorners;
+    vector<cv::Vec3d> rotationVectors, translationVectors;
+    const float ballSqaureDimensions = 0.041;
+    printf("Sending image\n");
+    cv::imwrite("frame.jpg", frame);
+
+    system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
+    int listen = 6;
+    const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
+    printf("Waiting for cloud processing\n");
+    ballCorners = wait_for_corners(listen, ip);
+
+    printf("Ball corners:\n");
+    for (int i = 0; i < 4; i++)
+    {
+        printf("(%.2f,%.2f)\t\t", ballCorners[0][i].x, ballCorners[0][i].y);
+        if (ballCorners[0][i].x == 10 && ballCorners[0][i].y == 10) 
+        {
+            return EXIT_FAILURE;
+        }
+    }
+
+    cv::aruco::estimatePoseSingleMarkers(ballCorners,
+                                         ballSqaureDimensions,
+                                         cam->cameraMatrix,
+                                         cam->distortionCoefficients,
+                                         rotationVectors,
+                                         translationVectors);
+    // Data class returned owned by FindBalls
+    FindBall *v = FindBalls::returnDataPointer();
+    v->lock.lock();
+    v->imageTime = imTime;
+    v->frameNumber = frameNumber;
+    v->rVec = rotationVectors[0];
+    v->tVec = translationVectors[0];
+    v->ballToRobotCoordinate(cam->cam2robot);
+    v->lock.unlock();
+
+    return EXIT_SUCCESS;
+}
 
 int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime)
 {
@@ -108,7 +156,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     //cv::medianBlur(gray, gray, 11);
     cv::medianBlur(hsv, hsv, 11);
 
-    inRange(hsv, cv::Scalar(7, 95, 90), cv::Scalar(21, 200, 241), frame_thresh); //ball 
+    inRange(hsv, cv::Scalar(1, 90, 100), cv::Scalar(20, 230, 240), frame_thresh); //ball 
 
     if(debug){
         cv::imwrite("thresh.jpg", frame_thresh);
@@ -129,15 +177,15 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     }
 
     // do hough circles
-    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 20, 10, 50);
+    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 5, 0, 70);
 
     // save image
     if(debug){
         cv::imwrite("frame.jpg", frame);
     }
 
-    sleep(1);
-    system("scp frame.jpg dennis@192.168.1.149:~/Images/frame.jpg");
+    //sleep(1);
+    //system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
 
 
     // draw the circles detected
@@ -176,9 +224,9 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         printf("Ball corners:\n");
         for (int i = 0; i < 4; i++)
         {
-            printf("(%.2f,%.2f)\t\t", ballCorners[0][i].x, ballCorners[0][i].y);
+            printf("\t(%.2f,%.2f)\n\t\t", ballCorners[0][i].x, ballCorners[0][i].y);
         }
-
+        
         cv::aruco::estimatePoseSingleMarkers(ballCorners,
                                              ballSqaureDimensions,
                                              cam->cameraMatrix,
@@ -194,6 +242,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
         v->tVec = translationVectors[0];
         v->ballToRobotCoordinate(cam->cam2robot);
         v->lock.unlock();
+        
 
         return EXIT_SUCCESS;
     }

@@ -15,6 +15,7 @@
 #include "ubridge.h"
 #include "utime.h"
 #include "ulibpose.h"
+#include "cloud_process.h"
 // #include "u2dline.h"
 // this should be defined in the CMakeList.txt ? or ?
 #ifdef raspicam_CV_LIBS
@@ -90,6 +91,7 @@ public:
     static const int MAX_VAL_CNT = 1;
 
     int doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime);
+    int doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime imTime);
 
     void makeCamToRobotTransformation();
 

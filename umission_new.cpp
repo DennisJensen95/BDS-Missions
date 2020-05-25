@@ -772,14 +772,13 @@ bool UMission::mission3(int &state)
     // wait for event 1
     if (bridge->event->isEventSet(1))
     { // continue
-      savedHeading = (bridge->pose->h)*180.0/M_PI;
       state = 12;
     }
     break;
   case 12: // start ball analysis
   {
     if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2 * 180 / M_PI))
-    { // finished drive and turnrate is zero'ish
+    { // finished first drive and turnrate is zero'ish
       state = 20;
       // wait further 30ms - about one camera frame at 30 FPS
       usleep(35000);
@@ -794,18 +793,11 @@ bool UMission::mission3(int &state)
     {
       if (cam->ballFound == 0)
       { // found a single ball
-        if (caseCounter == 0){
-          state = 25;
-          caseCounter++;
-        }
-        else{
-          caseCounter--;
-          state = 30;
-          // tell the operator
-          printf("# case=%d found ball\n", state);
-          system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &");
-          bridge->send("oled 5 found ball");
-        }
+        state = 30;
+        // tell the operator
+        printf("# case=%d found ball\n", state);
+        system("espeak \"found ball.\" -ven+f4 -s130 -a5 2>/dev/null &");
+        bridge->send("oled 5 found ball");
       }
       else
       { // start turning procedure
@@ -814,7 +806,7 @@ bool UMission::mission3(int &state)
           state = 21;
         }
         else{
-          state = 50;
+          state = 999;
         }
       }
     }
@@ -853,49 +845,6 @@ bool UMission::mission3(int &state)
       state = 12;
     }
     break;
-  case 25:
-  {
-    FindBall *v = cam->findBalls->returnDataPointer();
-
-    float xm = v->ballPosition.at<float>(0,0);
-    float ym = v->ballPosition.at<float>(0,1);
-    //float hm = v->ballAngle;
-
-    float heading = (bridge->pose->h)*180.0/M_PI;
-
-    float turnAng = atan2(ym, xm)*(float)180.0/M_PI;
-    printf("Turning angle: %.2f\n", turnAng);
-
-    int line = 0;
-    // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
-    // turn 
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.6, head=%.1f: turn=%.1f", heading + turnAng, turnAng);
-    // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0: time=1");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
-    // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, line);
-    // make sure event 1 is cleared
-    bridge->event->isEventSet(1);
-    // tell the operator
-    printf("# case=%d aligning robot with ball\n", state);
-    bridge->send("oled 5 aligning...");
-    //
-    // go to wait for finished
-    state = 26;
-    break;
-  }
-  case 26:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { 
-      state = 12;
-    }
-    break;
   case 30: // move to ball
   {
     FindBall *v = cam->findBalls->returnDataPointer();
@@ -905,8 +854,8 @@ bool UMission::mission3(int &state)
     float hm = v->ballAngle;
 
     // stop some distance in front of marker
-    float dx = 0.27; // distance to stop in front of marker
-    float dy = 0.08; // distance to the left of marker
+    float dx = 0.32; // distance to stop in front of marker
+    float dy = 0.09; // distance to the left of marker
     xm += - dx*cos(hm) + dy*sin(hm);
     ym += - dx*sin(hm) - dy*cos(hm);
     // limits
@@ -932,21 +881,15 @@ bool UMission::mission3(int &state)
                   pp4.straightVel, acc, pp4.straightVel);
       }
 
-      float heading = (bridge->pose->h)*180.0/M_PI;
+      //float heading = (bridge->pose->h)*180.0/M_PI;
       // stop a few seconds
       snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
-      // open grabber
-      snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
       // turn 
-      snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.6, head=%.1f: turn=%.1f", heading + pp4.turnArc1 * 180 / M_PI, pp4.turnArc1 * 180 / M_PI);
-      // stop a few seconds
-      snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
-      // drive forward
-      snprintf(lines[line++], MAX_LEN, "vel=%.3f,acc=%.1f :dist=%.3f", pp4.straightVel, acc, pp4.straightDist);
-      // stop a few seconds
-      snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
-      // turn 
-      snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.6, head=%.1f: turn=%.1f", heading + pp4.turnArc1 * 180 / M_PI + pp4.turnArc2 * 180 / M_PI, pp4.turnArc2 * 180 / M_PI);
+      snprintf(lines[line++], MAX_LEN,   "vel=%.3f,tr=%.3f :turn=%.1f", 
+                pp4.straightVel, pp4.radius1, pp4.turnArc1 * 180 / M_PI);
+      snprintf(lines[line++], MAX_LEN,   ":dist=%.3f", pp4.straightDist);
+      snprintf(lines[line++], MAX_LEN,   "tr=%.3f :turn=%.1f", 
+                pp4.radius2, pp4.turnArc2 * 180 / M_PI);
       // stop a few seconds
       snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=3");
       if (pp4.finalBreak > 0.01)
@@ -1008,7 +951,15 @@ bool UMission::mission3(int &state)
     // raise arm
     snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
     // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 5");
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=10");
+    // wait 2 seconds
     snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // open grabber
+    snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
+    // wait 4 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 4");
     // create event 1
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -1027,104 +978,6 @@ bool UMission::mission3(int &state)
     break;
   }
   case 41:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { // finished first drive
-      state = 42;
-    }
-    break;
-  case 42:
-  {
-    float heading = (bridge->pose->h)*180.0/M_PI;
-    
-    int line = 0;
-    // align the robot with the starting position
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.6, head=%.1f: turn=%.1f, time=2", savedHeading, savedHeading-heading);
-    // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
-    // back up
-    snprintf(lines[line++], MAX_LEN, "vel=-0.2, acc=1 : dist=0.4");
-    // stop and create an event when arrived at this point
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
-    // send the 4 lines to the REGBOT
-    sendAndActivateSnippet(lines, line);
-    // make sure event 1 is cleared
-    bridge->event->isEventSet(1);
-    // tell the operator
-    printf("# case=%d backing up 1\n", state);
-    //
-    // go to wait for finished
-    state = 43;
-    break;
-  }
-  case 43:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { // finished first drive
-      state = 44;
-    }
-    break;
-  case 44: // start ball analysis
-  {
-    if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < (2 * 180 / M_PI))
-    { // finished drive and turnrate is zero'ish
-      state = 45;
-      // wait further 30ms - about one camera frame at 30 FPS
-      usleep(35000);
-      // start ball analysis
-      printf("# started new ball analysis\n");
-      cam->doFindBall = true;
-    }
-    break;
-  }
-  case 45:
-    if (not cam->doFindBall) // ball processing finished
-    {
-      if (cam->ballFound == 0)
-      { // found a single ball
-        state = 12;
-      }
-      else
-      { // ball has been picked up
-        state = 50;
-      }
-    }
-    break;
-  case 50:
-  {
-    int line = 0;
-    // lower arm
-    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=300, vservo=10");
-    // wait 2 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 2");
-    // lower arm slowly
-    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=1");
-    // wait 2 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 2");
-    // open grabber
-    snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
-    // wait 4 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 2");
-    // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
-    // add a line, so that the robot is occupied until next snippet has arrived
-    snprintf(lines[line++], MAX_LEN, ": dist=1");
-    // send the 6 lines to the REGBOT
-    sendAndActivateSnippet(lines, line);
-    // make sure event 1 is cleared
-    bridge->event->isEventSet(1);
-    // tell the operator
-    printf("# case=%d sent mission snippet 10\n", state);
-    system("espeak \"code snippet 10.\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 code snippet 10");
-    
-    // go to wait for finished
-    state = 51;
-    break;
-  }
-  case 51:
     // wait for event 1 (send when finished driving first part)
     if (bridge->event->isEventSet(1))
     { // finished first drive
