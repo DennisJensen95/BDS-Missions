@@ -91,8 +91,21 @@ int FindBalls::doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime i
     const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
     printf("Waiting for cloud processing\n");
     ballCorners = wait_for_corners(listen, ip);
+    
+    printf("\nFull ballCorners:\n");
+    for (const vector<cv::Point2f> &v : ballCorners)
+    {
+        int i = 0;
+        for (cv::Point2f pt : v){
+            cout << pt.x << ", " << pt.y << " ; ";
+            if(++i % 4 == 0){
+                cout << endl;
+            }
+        }
+        cout << endl;
+    }
 
-    printf("Ball corners:\n");
+    printf("\nBall corners:\n");
     for (int i = 0; i < 4; i++)
     {
         printf("(%.2f,%.2f)\t\t", ballCorners[0][i].x, ballCorners[0][i].y);

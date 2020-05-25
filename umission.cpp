@@ -1094,10 +1094,6 @@ bool UMission::mission3(int &state)
     break;
   case 50:
   {
-    //float heading = (bridge->pose->h)*180.0/M_PI;
-
-    //savedHeading = -15;
-
     int line = 0;
     // raise arm
     snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
@@ -1106,14 +1102,13 @@ bool UMission::mission3(int &state)
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
     // turn 90 degrees to the right
-    //snprintf(lines[line++], MAX_LEN, "topos=0, vel=0.1, acc=0.3, head=%.1f: turn=-90", heading-90.0);
     snprintf(lines[line++], MAX_LEN, "vel=0.2, tr=0.1: turn=-90");
     // wait 2 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0: time = 1");
     // drive until line crossing
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl>5");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: lv>0");
     // drive until after crossing
-    snprintf(lines[line++], MAX_LEN, "vel=0.1 acc=1: dist=0.1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.1, acc=1: dist=0.1");
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
     // turn to saved heading
@@ -1261,11 +1256,11 @@ bool UMission::mission3(int &state)
   {
     int line = 0;
     // lower arm
-    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=300, vservo=10");
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=250, vservo=10");
     // wait 2 seconds
     snprintf(lines[line++], MAX_LEN, ": time = 2");
     // lower arm slowly
-    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=400, vservo=1");
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=370, vservo=1");
     // wait 2 seconds
     snprintf(lines[line++], MAX_LEN, ": time = 2");
     // open grabber
@@ -1305,17 +1300,17 @@ bool UMission::mission3(int &state)
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
     // back up slightly
-    snprintf(lines[line++], MAX_LEN, "vel=-0.2: time=1");
+    snprintf(lines[line++], MAX_LEN, "vel=-0.2: dist=0.4");
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0: time=1");
     // turn 60 degrees to the left
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, tr=0.1: turn=60");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, tr=0.15: turn=60");
     // wait 2 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    snprintf(lines[line++], MAX_LEN, "vel=0: time = 1");
     // drive until line crossing
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl>5");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: lv>0");
     // drive until after crossing
-    snprintf(lines[line++], MAX_LEN, "vel=0.1 acc=1: dist=0.1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.1, acc=1: dist=0.1");
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
     // turn to saved heading
@@ -1347,13 +1342,48 @@ bool UMission::mission3(int &state)
     // wait for event 1
     if (bridge->event->isEventSet(1))
     { // finished drive
+      state = 90;
+    }
+    break;
+  case 90: // this case is for testing mission 3
+  {
+    int line = 0;
+    // lower arm
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=300, vservo=10");
+    // wait 2 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
+    // lower arm slowly
+    snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=1");
+    // wait 3 seconds
+    snprintf(lines[line++], MAX_LEN, ": time = 3");
+    // drive backwards
+    snprintf(lines[line++], MAX_LEN, "vel=-0.2: dist=0.7");
+    // create event 1
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
+    // add a line, so that the robot is occupied until next snippet has arrived
+    snprintf(lines[line++], MAX_LEN, ": dist=1");
+    // send the 6 lines to the REGBOT
+    sendAndActivateSnippet(lines, line);
+    // make sure event 1 is cleared
+    bridge->event->isEventSet(1);
+    // tell the operator
+    printf("# case=%d lowering arm\n", state);
+    
+    // go to wait for finished
+    state = 91;
+    break;
+  }
+  case 91:
+    // wait for event 1 (send when finished driving first part)
+    if (bridge->event->isEventSet(1))
+    { // finished first drive
       state = 999;
     }
     break;
   case 999: // end
   default:
-    printf("mission 1 ended \n");
-    bridge->send("oled 5 \"mission 1 ended.\"");
+    printf("mission 3 ended \n");
+    bridge->send("oled 5 \"mission 3 ended.\"");
     finished = true;
     break;
   }

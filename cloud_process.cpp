@@ -20,6 +20,8 @@ vector<cv::Point2f> corners;
 void callback_received_corners(struct mosquitto *mosq, void *userdata,
                                const struct mosquitto_message *msg)
 {
+    corners.clear();
+    ballCorners.clear();
     printf("On topic: %s ", msg->topic);
     if (msg->payload != NULL)
     {
@@ -41,7 +43,6 @@ void callback_received_corners(struct mosquitto *mosq, void *userdata,
                 //save the number found if non-digit character is found if it is not 0
                 if (num > 0)
                 {
-                    printf("Corner %d\n", num);
                     corner.push_back(num);
                     num = 0;
                 }
@@ -51,11 +52,13 @@ void callback_received_corners(struct mosquitto *mosq, void *userdata,
                 corners.push_back(cv::Point2f(corner[0], corner[1]));
                 corner.clear();
             }
-            
+
+            if (corners.size() > 3) {
+                ballCorners.push_back(corners);
+                received_corners = true;
+            }
         }
     }
-    ballCorners.push_back(corners);
-    received_corners = true;
 }
 
 void mqtt_wait_for_message(int listen_seconds, struct mosquitto *mosq)
@@ -87,6 +90,11 @@ void mqtt_wait_for_message(int listen_seconds, struct mosquitto *mosq)
 vector<vector<cv::Point2f>> get_ball_corners()
 {
     return ballCorners;
+}
+
+void clear_ball_corners() {
+    ballCorners.clear();
+    corners.clear();
 }
 
 void check_for_message(struct mosquitto *mosq)
@@ -123,6 +131,7 @@ vector<vector<cv::Point2f>> wait_for_corners(int listen_seconds, const char *ip)
             printf("Corners received\n");
             ballCornersReturn = get_ball_corners();
             received_corners = false;
+            clear_ball_corners();
             return ballCornersReturn;
         }
         time_spent = (double)(clock() - begin) / CLOCKS_PER_SEC;
@@ -139,5 +148,6 @@ vector<vector<cv::Point2f>> wait_for_corners(int listen_seconds, const char *ip)
     corners.push_back(cv::Point2f(10, 10));
     corners.push_back(cv::Point2f(10, 10));
     ballCornersReturn.push_back(corners);
+    clear_ball_corners();
     return ballCornersReturn;   
 }
