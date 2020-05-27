@@ -358,7 +358,7 @@ bool UMission::mission1(int &state)
     break;
   case 1:
     if (bridge->joy->button[BUTTON_GREEN]){
-      PlaySound("../sounds/m1start.mp3");
+      PlaySound("m1start.mp3");
       sleep(3);
       state = 10;
     }
@@ -396,7 +396,7 @@ bool UMission::mission1(int &state)
     break;
   case 999:
   default:
-    PlaySound("../sounds/eom.mp3");
+    PlaySound("eom.mp3");
     sleep(3);
     printf("mission 1 ended \n");
     bridge->send("oled 5 \"mission 1 ended.\"");
@@ -421,7 +421,7 @@ bool UMission::mission2(int &state)
   {
   case 0:
   {
-    PlaySound("../sounds/m2start.mp3");
+    PlaySound("m2start.mp3");
     sleep(3);
     float heading = (bridge->pose->h)*180.0/M_PI;
 
@@ -575,7 +575,7 @@ bool UMission::mission2(int &state)
     break;
   case 999:
   default:
-    PlaySound("../sounds/eom.mp3");
+    PlaySound("eom.mp3");
     sleep(3);
     printf("mission 2 ended \n");
     bridge->send("oled 5 \"mission 2 ended.\"");
@@ -603,7 +603,7 @@ bool UMission::mission3(int &state)
     caseCounter = 0;
     // tell the operatior what to do
     printf("# started mission 3.\n");
-    PlaySound("../sounds/m3start.mp3");
+    PlaySound("m3start.mp3");
     sleep(3);
     state = 1;
     break;
@@ -653,7 +653,7 @@ bool UMission::mission3(int &state)
     if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < 1.5){
       SaveHeading();
       state = 12;
-      PlaySound("../sounds/orangeball.mp3");
+      PlaySound("orangeball.mp3");
     }
   case 12: // start ball analysis
   {
@@ -876,12 +876,12 @@ bool UMission::mission3(int &state)
       if (cam->ballFound == 0)
       { // found a single ball
         state = 12;
-        PlaySound("../sounds/bruh.mp3");
+        PlaySound("bruh.mp3");
       }
       else
       { // ball has been picked up
         state = 50;
-        PlaySound("../sounds/yeah.mp3");
+        PlaySound("yeah.mp3");
       }
     }
     break;
@@ -1029,7 +1029,7 @@ bool UMission::mission3(int &state)
     break;
   case 999: // end
   default:
-    PlaySound("../sounds/eom.mp3");
+    PlaySound("eom.mp3");
     sleep(3);
     printf("mission 3 ended \n");
     bridge->send("oled 5 \"mission 3 ended.\"");
@@ -1054,7 +1054,7 @@ bool UMission::mission4(int &state)
   switch (state)
   {
   case 0:
-    PlaySound("../sounds/m4start.mp3");
+    PlaySound("m4start.mp3");
     sleep(3);
     // tell the operatior what to do
     printf("# started mission 4.\n");
@@ -1079,7 +1079,7 @@ bool UMission::mission4(int &state)
       // wait further 30ms - about one camera frame at 30 FPS
       usleep(35000);
       // start aruco analysis 
-      PlaySound("../sounds/aruco.mp3");
+      PlaySound("aruco.mp3");
       sleep(3);
       printf("# started new ArUco analysis\n");
       cam->doArUcoAnalysis = true;
@@ -1128,14 +1128,14 @@ bool UMission::mission4(int &state)
       state = 12;
 
       if (cam->markerId == 1){
-        PlaySound("../sounds/aur1.mp3");
+        PlaySound("aur1.mp3");
         sleep(3);
-        PlaySound("../sounds/blueball.mp3");
+        PlaySound("/blueball.mp3");
         sleep(2);
       }else{
-        PlaySound("../sounds/aur0.mp3");
+        PlaySound("aur0.mp3");
         sleep(3);
-        PlaySound("../sounds/orangeball.mp3");
+        PlaySound("orangeball.mp3");
         sleep(2);
       }
     }
@@ -1369,12 +1369,12 @@ bool UMission::mission4(int &state)
       if (cam->ballFound == 0)
       { // found a ball
         state = 12;
-        PlaySound("../sounds/bruh.mp3");
+        PlaySound("bruh.mp3");
       }
       else
       { // ball has been picked up
         state = 50;
-        PlaySound("../sounds/yeah.mp3");
+        PlaySound("yeah.mp3");
       }
     }
     break;
@@ -1521,9 +1521,9 @@ bool UMission::mission4(int &state)
   case 999:
   default:
     // end log
-    PlaySound("../sounds/eom.mp3");
+    PlaySound("eom.mp3");
     sleep(2);
-    PlaySound("../sounds/gb.mp3");
+    PlaySound("gb.mp3");
     sleep(2);
     printf("mission 4 ended \n");
     bridge->send("oled 5 \"mission 4 ended.\"");
@@ -1772,6 +1772,17 @@ void UMission::SaveHeading(){
 }
 
 void UMission::PlaySound(const char* file){
+  // path to folder with sounds
+  const char* path = "../sounds/";
+
+  // create new string
+	char buffer[256];
+	strncpy_s(buffer, path, sizeof(buffer));
+	strncat_s(buffer, file, sizeof(buffer));
+
+  // edit original input
+	file = (char*)&buffer;
+
   play.setFile(file);
   play.setVolume(100); // % (0..100)
   play.start();
