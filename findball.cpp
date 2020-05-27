@@ -271,6 +271,150 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     }
 }
 
+int FindBalls::doFindBallProcessingColor(cv::Mat frame, int frameNumber, UTime imTime, int ballColor)
+{
+    bool debug = true;
+
+    const float ballSqaureDimensions = 0.04; //4.1 cm diameter
+    vector<vector<cv::Point2f>> ballCorners;
+    vector<cv::Point2f> corners;
+
+    vector<cv::Vec3d> rotationVectors, translationVectors;
+
+    UTime t;
+    t.now();
+
+    int erosion_size = 11;
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT,
+        cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+        cv::Point(erosion_size, erosion_size));
+
+    // matrix to store gray picture
+    cv::Mat gray,hsv,frame_thresh;
+
+    // vector to store the found circle
+    vector<cv::Vec3f> circles;
+
+    // convert to gray scale
+    //cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    
+    // stretch colour spectrum
+    //cv::equalizeHist(gray, gray);
+
+    // blur image for better processing
+    //cv::medianBlur(gray, gray, 11);
+    cv::medianBlur(hsv, hsv, 11);
+
+    //inRange(hsv, cv::Scalar(1, 90, 100), cv::Scalar(20, 230, 240), frame_thresh); //ball 
+    vector<vector<cv::Scalar>> hsv_ranges;
+    vector<cv::Scalar> hsv_val; 
+    hsv_val.push_back(cv::Scalar(3, 100, 130));
+    hsv_val.push_back(cv::Scalar(20, 211, 210));
+    hsv_ranges.push_back(hsv_val);
+    hsv_val.clear();
+    hsv_val.push_back(cv::Scalar(110, 28, 100));
+    hsv_val.push_back(cv::Scalar(130, 73, 12));
+    hsv_ranges.push_back(hsv_val);
+
+    inRange(hsv, hsv_ranges[ballColor][0], hsv_ranges[ballColor][1], frame_thresh); //25.05
+
+    if(debug){
+        cv::imwrite("thresh.jpg", frame_thresh);
+    }
+
+    // erosion removes noise
+    cv::erode(frame_thresh, frame_thresh, cv::Mat(), cv::Point(-1, -1), 5); // cv::Mat() gives a 3x3 square structuring element
+    /// dilate to create square around ball
+    cv::dilate(frame_thresh, frame_thresh, element, cv::Point(-1, -1), 5);
+
+    cv::bitwise_and(frame, frame, gray, frame_thresh);
+
+    cv::cvtColor(gray, gray, cv::COLOR_BGR2GRAY);
+
+    // save image
+    if(debug){
+        cv::imwrite("gray.jpg", gray);
+    }
+
+    // do hough circles
+    cv::HoughCircles(gray, circles, cv::HOUGH_GRADIENT, 1, 10000, 50, 5, 0, 70);
+
+    // save image
+    if(debug){
+        cv::imwrite("frame.jpg", frame);
+    }
+
+    //sleep(1);
+    //system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
+
+
+    // draw the circles detected
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radius = cvRound(circles[i][2]);
+        // circle center
+        cv::circle( frame, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        // circle outline
+        cv::circle( frame, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+    }
+
+    // save image with circles
+    if(debug){
+        cv::imwrite("circles.jpg", frame);
+    }
+
+    if (circles.size() == 1)
+    {
+        cv::Vec3i c = circles[0];
+        int x = floor(c[0]);
+        int y = floor(c[1]);
+        int r = floor(c[2]);
+        printf("Centre coordinates:\t");
+        printf("x = %d, y = %d\n", x, y);
+        printf("Radius:\t\t\tr = %d pixels\n", r);
+
+        corners.push_back(cv::Point2f(x - r, y - r));
+        corners.push_back(cv::Point2f(x + r, y - r));
+        corners.push_back(cv::Point2f(x + r, y + r));
+        corners.push_back(cv::Point2f(x - r, y + r));
+
+        ballCorners.push_back(corners);
+
+        printf("Ball corners:\n");
+        for (int i = 0; i < 4; i++)
+        {
+            printf("\t(%.2f,%.2f)\n\t\t", ballCorners[0][i].x, ballCorners[0][i].y);
+        }
+        
+        cv::aruco::estimatePoseSingleMarkers(ballCorners,
+                                             ballSqaureDimensions,
+                                             cam->cameraMatrix,
+                                             cam->distortionCoefficients,
+                                             rotationVectors,
+                                             translationVectors);
+        // Data class returned owned by FindBalls
+        FindBall *v = FindBalls::returnDataPointer();
+        v->lock.lock();
+        v->imageTime = imTime;
+        v->frameNumber = frameNumber;
+        v->rVec = rotationVectors[0];
+        v->tVec = translationVectors[0];
+        v->ballToRobotCoordinate(cam->cam2robot);
+        v->lock.unlock();
+        
+
+        return EXIT_SUCCESS;
+    }
+    else
+    {
+        printf("Found more than one circle or none\n");
+
+        return EXIT_FAILURE;
+    }
+}
+
 int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int ballColor)
 {   
     vector<cv::Mat> frames;
@@ -287,13 +431,13 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     // Performing STD on image roi to detect color (using only channel with: Hue)
     vector<cv::Mat> channels(3);
     vector<double> SSD_vector;
-    vector<double> hueref_values = {10, 120}; // {Blue, Orange}
+    vector<double> hueref_values = {15, 120}; // {Orange, Blue}
 
     printf("Sending image\n");
     cv::imwrite("frame.jpg", frame);
     
     system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
-    int listen = 6;
+    int listen = 15;
     const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
     printf("Waiting for cloud processing\n");
     ballCorners = wait_for_corners(listen, ip);
@@ -304,6 +448,8 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     double sum;
     double width;
     double height;
+    double x_roi;
+    double y_roi;
     printf("Number of balls: %d\n", ballCorners.size());
     for (uint j = 0; j < ballCorners.size(); j++)
     {
@@ -320,10 +466,18 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
                 return EXIT_FAILURE;
             } 
         }
+        
+        width = (int)(ballCorners[j][1].x - ballCorners[j][0].x) - 40;
+        height = (int)(ballCorners[j][2].y - ballCorners[j][0].y) - 40;
+        x_roi = (int)ballCorners[j][0].x+20;
+        y_roi = (int)ballCorners[j][0].y+20;
 
-        width = ballCorners[j][1].x - ballCorners[j][0].x;
-        height = ballCorners[j][2].y - ballCorners[j][0].y;
-        cv::Rect roi((int)ballCorners[j][0].x+20, (int)ballCorners[j][0].y+20, (int)width-40, (int)height-40);
+        if (x_roi < 0 || y_roi < 0 || (x_roi + width) > frame.cols || (y_roi + height) > frame.rows) // Making sure that roi is inside frame
+        {
+            continue;
+        }
+        cv::Rect roi(x_roi, y_roi, width, height);
+        //cv::Rect roi((int)ballCorners[j][0].x+20, (int)ballCorners[j][0].y+20, (int)width-40, (int)height-40); // Roi can go outside of frame
         //printf("%d, %d\n", frame.rows, frame.cols);
         frame_roi = frame(roi);
         cv::imwrite(namestr, frame_roi);
@@ -338,14 +492,32 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
                 sum += pow((channels[0].at<uchar>(j, k) - hueref_values[ballColor]),2);
             }
         }
+        sum = sum / (channels[0].rows * channels[0].cols);
         printf("Sum: %.2f \n", sum);
         SSD_vector.push_back(sum);
+    }
+    if (SSD_vector.size() == 0)
+    {
+        return EXIT_FAILURE;
+    } 
+
+    unsigned int not_the_right_color = 0;
+    for (unsigned int i = 0; i < SSD_vector.size(); i++) {
+        if (SSD_vector[i] > 500) 
+        {
+            not_the_right_color++;
+        }
+    }
+
+    if (not_the_right_color == SSD_vector.size()) 
+    {
+        return EXIT_FAILURE;
     }
 
     auto mini = min_element(SSD_vector.begin(), SSD_vector.end());
     int SSD_idx = distance(SSD_vector.begin(), mini);
 
-    printf("Found Ball colored: %d {0: Blue, 1: Orange} should find %d\n", SSD_idx, ballColor);
+    printf("{0: Orange, 1: Blue} should find %d\n", ballColor);
     foundBallCorners.push_back(ballCorners[SSD_idx]);
 
     cv::aruco::estimatePoseSingleMarkers(foundBallCorners,

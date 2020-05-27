@@ -56,8 +56,8 @@ public:
 
   // Do ball find detection
   bool doFindBall = false;
-  // See if a ball has been found
-  int ballFound = 0;
+  // See if a ball has been found (1 = EXIT_FAILURE)
+  int ballFound = 1;
   // flag to do ArUcoAnalysis
   bool doArUcoAnalysis = false;
   // vector to store aruco marker ids

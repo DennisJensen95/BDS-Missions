@@ -214,7 +214,6 @@ void UCamera::run()
   doArUcoAnalysis = false;
   doArUcoLoopTest = false;
   doFindBall = false;
-  ballFound = 0;
   int arucoLoop = 100;
   while (not th1stop)
   {
@@ -273,11 +272,11 @@ void UCamera::run()
           /*double test = 120.0;
           test = findBalls->deg2rad(test);
           printf("Angle: %.2f\n", test);*/
-          printf("%d\n", markerId);
+          printf("Marker ID (ucamera): %d\n", markerId);
           ballFound = findBalls->doFindBallColor(im, imageNumber, imTime, markerId);
           if (ballFound != 0) {
               printf("\n NOTE: Did not find ball with neural net!\n");
-              ballFound = findBalls->doFindBallProcessing(im, imageNumber, imTime);
+              ballFound = findBalls->doFindBallProcessingColor(im, imageNumber, imTime, markerId);
           }
           //printf("ballFound = %d\n", ballFound); //DEBUG
           doFindBall = false;

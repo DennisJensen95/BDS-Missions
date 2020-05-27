@@ -65,7 +65,8 @@ private:
   FILE *logMission = NULL;
 
   int caseCounter = 0;
-  float savedHeading = 0;
+  int ballGrabTries = 0;
+  float heading_ref = 0;
 
 public:
   /**
@@ -127,6 +128,55 @@ private:
   bool mission3(int &state);
   bool mission4(int &state);
 
+  /**
+  * Mission helpers
+  * \param state is the current state of the mission
+  */
+  /**
+  * Find the line of the main track after grabbing the ball
+  * \param ang is the desired angle to turn towards the line (default -90 deg right)
+  */
+  void FindLineAfterBall(int& state, float = -90.0);
+  /*
+  * Drive along a line until a crossing is found
+  */
+  void Drive2LineX(int state);
+  /**
+  * Wait for event to occur
+  * \param next_state the next state to occur
+  * \param event the event to wait for (default 1)
+  */
+  void WaitForEvent(int &state, int next_state, int = 1);
+  /**
+  * Turn the robot and drive slowly until 
+  * \param turn angle to turn the robot (default 90 deg left)
+  */
+  void TurnAndDriveUntilLineX(int state, float = 90.0);
+  /**
+  * Perform a simple turn and stop
+  * \param turn angle to turn the robot (default 90 deg left)
+  */
+  void SimpleTurn(int state, float = 90.0);
+  /**
+  * Set the grabber to open and raise the arm
+  */
+  void PrepareGrabber(int state);
+  /*
+  * Control arm and grabber to grab ball
+  */
+  void GrabBall(int state);
+  /*
+  * Control arm and grabber to deliver ball
+  */
+  void DeliverBall(int state);
+   /**
+   * Object to play a soundfile as we go */
+ 
+  /*
+  * Saves the current heading as reference
+  */
+  void SaveHeading();
+
 private:
   /**
    * Send a number of lines to the REGBOT in a dormant thread, and 
@@ -135,11 +185,10 @@ private:
    * \param missionLineCnt is the number of strings to be send from the missionLine array. */
   void sendAndActivateSnippet(char *missionLines[], int missionLineCnt);
   /**
-   * Object to play a soundfile as we go */
-  UPlay play;
-  /**
    * turn count, when looking for feature */
   int featureCnt;
+
+  UPlay play;
 };
 
 #endif
