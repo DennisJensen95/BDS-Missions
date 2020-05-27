@@ -248,12 +248,12 @@ void UMission::runMission()
           //ended = true;
           break;
         case 2:
-          //ended = mission2(missionState);
-          ended = true;
+          ended = mission2(missionState);
+          //ended = true;
           break;
         case 3:
-          //ended = mission3(missionState);
-          ended = true;
+          ended = mission3(missionState);
+          //ended = true;
           break;
         case 4:
           ended = mission4(missionState);
@@ -357,8 +357,11 @@ bool UMission::mission1(int &state)
     state++;
     break;
   case 1:
-    if (bridge->joy->button[BUTTON_GREEN])
+    if (bridge->joy->button[BUTTON_GREEN]){
+      PlaySound("../sounds/m1start.mp3");
+      sleep(3);
       state = 10;
+    }
     break;
   case 10:
   {
@@ -370,7 +373,7 @@ bool UMission::mission1(int &state)
     // increase velocity and follow line until right IR sensor detects an obstacle
     snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=1 : ir2 < 0.20");
     // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=2: time=2");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=2, edgel=-1, white=1: time=2");
     // stop and create an event when arrived at this point
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -393,6 +396,8 @@ bool UMission::mission1(int &state)
     break;
   case 999:
   default:
+    PlaySound("../sounds/eom.mp3");
+    sleep(3);
     printf("mission 1 ended \n");
     bridge->send("oled 5 \"mission 1 ended.\"");
     finished = true;
@@ -416,6 +421,8 @@ bool UMission::mission2(int &state)
   {
   case 0:
   {
+    PlaySound("../sounds/m2start.mp3");
+    sleep(3);
     float heading = (bridge->pose->h)*180.0/M_PI;
 
     // printf("Heading = %f\n", heading);
@@ -423,6 +430,8 @@ bool UMission::mission2(int &state)
     int line = 0;
     // turn 90 degrees to the left
     snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=90", heading+90.0);
+    // drive a bit
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.8: dist=0.05");
     // drive while obstacle is in view 
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.8: ir1 > 0.5");
     // drive forward 30 cm
@@ -566,6 +575,8 @@ bool UMission::mission2(int &state)
     break;
   case 999:
   default:
+    PlaySound("../sounds/eom.mp3");
+    sleep(3);
     printf("mission 2 ended \n");
     bridge->send("oled 5 \"mission 2 ended.\"");
     finished = true;
@@ -592,8 +603,8 @@ bool UMission::mission3(int &state)
     caseCounter = 0;
     // tell the operatior what to do
     printf("# started mission 3.\n");
-    system("espeak \"looking for ball\" -ven+f4 -s130 -a5 2>/dev/null &");
-    bridge->send("oled 5 looking 4 ball");
+    PlaySound("../sounds/m3start.mp3");
+    sleep(3);
     state = 1;
     break;
   case 1:
@@ -837,7 +848,7 @@ bool UMission::mission3(int &state)
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d backing up 1\n", state);
+    printf("# case=%d sent mission snippet\n", state);
     //
     // go to wait for finished
     state = 43;
@@ -1018,6 +1029,8 @@ bool UMission::mission3(int &state)
     break;
   case 999: // end
   default:
+    PlaySound("../sounds/eom.mp3");
+    sleep(3);
     printf("mission 3 ended \n");
     bridge->send("oled 5 \"mission 3 ended.\"");
     finished = true;
@@ -1041,10 +1054,12 @@ bool UMission::mission4(int &state)
   switch (state)
   {
   case 0:
+    PlaySound("../sounds/m4start.mp3");
+    sleep(3);
     // tell the operatior what to do
     printf("# started mission 4.\n");
     caseCounter = 0;
-    state=1;
+    state++;
     break;
   case 1:
   {
@@ -1064,6 +1079,8 @@ bool UMission::mission4(int &state)
       // wait further 30ms - about one camera frame at 30 FPS
       usleep(35000);
       // start aruco analysis 
+      PlaySound("../sounds/aruco.mp3");
+      sleep(3);
       printf("# started new ArUco analysis\n");
       cam->doArUcoAnalysis = true;
     }
@@ -1111,9 +1128,15 @@ bool UMission::mission4(int &state)
       state = 12;
 
       if (cam->markerId == 1){
+        PlaySound("../sounds/aur1.mp3");
+        sleep(3);
         PlaySound("../sounds/blueball.mp3");
+        sleep(2);
       }else{
+        PlaySound("../sounds/aur0.mp3");
+        sleep(3);
         PlaySound("../sounds/orangeball.mp3");
+        sleep(2);
       }
     }
     break;
@@ -1318,7 +1341,7 @@ bool UMission::mission4(int &state)
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
     // tell the operator
-    printf("# case=%d backing up 1\n", state);
+    printf("# case=%d sent mission snippet\n", state);
     //
     // go to wait for finished
     state = 43;
@@ -1498,7 +1521,10 @@ bool UMission::mission4(int &state)
   case 999:
   default:
     // end log
-    //system("lc pose hbt imu ir motor joy event cam aruco mission");
+    PlaySound("../sounds/eom.mp3");
+    sleep(2);
+    PlaySound("../sounds/gb.mp3");
+    sleep(2);
     printf("mission 4 ended \n");
     bridge->send("oled 5 \"mission 4 ended.\"");
     finished = true;
@@ -1595,11 +1621,11 @@ void UMission::FindLineAfterBall(int& state, int direc){
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // turn towards line
   //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading+ang, ang);
-  snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading_ref-90, turnang);
+  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, head=%.1f: turn=%.1f", heading_ref-90, turnang);
   // stop a few seconds
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // drive until line crossing
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl>10");
+  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl=20");
   // drive until after crossing
   snprintf(lines[line++], MAX_LEN, "vel=0.1: dist=0.1");
   // stop a few seconds
@@ -1614,6 +1640,7 @@ void UMission::FindLineAfterBall(int& state, int direc){
   snprintf(lines[line++], MAX_LEN, ": dist=1");
   // send the 6 lines to the REGBOT
   sendAndActivateSnippet(lines, line);
+
   // make sure event 1 is cleared
   bridge->event->isEventSet(1);
   // tell the operator
