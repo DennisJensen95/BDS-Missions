@@ -134,9 +134,9 @@ private:
   */
   /**
   * Find the line of the main track after grabbing the ball
-  * \param ang is the desired angle to turn towards the line (default -90 deg right)
+  * \param direc is the desired direction to turn towards the line (default -1 ~right)
   */
-  void FindLineAfterBall(int& state, float = -90.0);
+  void FindLineAfterBall(int& state, int = -1);
   /*
   * Drive along a line until a crossing is found
   */
@@ -176,6 +176,12 @@ private:
   * Saves the current heading as reference
   */
   void SaveHeading();
+
+  /**
+  * Play sound
+  * \param file location of file to be played
+  */
+  void PlaySound(const char * file);
 
 private:
   /**

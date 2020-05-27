@@ -244,16 +244,16 @@ void UMission::runMission()
         switch (mission)
         {
         case 1: // running auto mission
-          //ended = mission1(missionState);
-          ended = true;
+          ended = mission1(missionState);
+          // ended = true;
           break;
         case 2:
-          //ended = mission2(missionState);
-          ended = true;
+          ended = mission2(missionState);
+          // ended = true;
           break;
         case 3:
           ended = mission3(missionState);
-          // ended = true;
+          //ended = true;
           break;
         case 4:
           ended = mission4(missionState);
@@ -348,6 +348,8 @@ bool UMission::mission1(int &state)
   switch (state)
   {
   case 0:
+    // start log
+    // system("lo pose hbt imu ir motor joy event cam aruco mission");
     // tell the operatior what to do
     printf("# press green to start.\n");
     system("espeak \"press green to start\" -ven+f4 -s130 -a5 2>/dev/null &");
@@ -362,13 +364,13 @@ bool UMission::mission1(int &state)
   {
     int line = 0;
     // raise arm
-    snprintf(lines[line++], MAX_LEN, "log=200, servo=3, pservo=-300, vservo=10");
+    snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
     // follow white line for 2 ss at a lower velocity
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1 : time=2");
-    // increase velocity and follow line until right IR sensor detects a hand waving
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=-1, white=1 : ir2 < 0.15");
+    // increase velocity and follow line until right IR sensor detects an obstacle
+    snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=1 : ir2 < 0.20");
     // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=2: time=2");
     // stop and create an event when arrived at this point
     snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
@@ -602,9 +604,7 @@ bool UMission::mission3(int &state)
     break;
   case 1:
   {
-    play.setFile("../bruh.mp3");
-    play.setVolume(100); // % (0..100)
-    play.start();
+    PlaySound("../yeah.mp3");
 
     // drive until reaching a line crossing
     Drive2LineX(state);
@@ -1055,9 +1055,7 @@ bool UMission::mission4(int &state)
     break;
   case 1:
   {
-    play.setFile("../bruh.mp3");
-    play.setVolume(100); // % (0..100)
-    play.start();
+    PlaySound("../bruh.mp3");
     TurnAndDriveUntilLineX(state);
     // go to wait for finished
     state = 2;
@@ -1088,10 +1086,10 @@ bool UMission::mission4(int &state)
     { // aruco processing finished
       if(cam->markerId == -1)
       {
-        printf("Found more than one marker\n");
+        printf("No single marker found\n");
         if(caseCounter++ > 3){
           printf("End of mission.\n");
-          state = 999;
+          state = 90;
         }
         else
         {
@@ -1473,9 +1471,9 @@ bool UMission::mission4(int &state)
     state = 83;
     break;
   case 83:
-    WaitForEvent(state, 999);
+    WaitForEvent(state, 90);
     break;
-  case 90: // this case is for testing
+  case 90: // lower arm to end mission
   {
     int line = 0;
     // lower arm
@@ -1485,11 +1483,9 @@ bool UMission::mission4(int &state)
     // lower arm slowly
     snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=480, vservo=1");
     // wait 3 seconds
-    snprintf(lines[line++], MAX_LEN, ": time = 3");
-    // drive backwards
-    snprintf(lines[line++], MAX_LEN, "vel=-0.2: dist=0.7");
+    snprintf(lines[line++], MAX_LEN, ": time = 2");
     // create event 1
-    snprintf(lines[line++], MAX_LEN, "event=1, vel=0, log=0");
+    snprintf(lines[line++], MAX_LEN, "event=1, vel=0");
     // add a line, so that the robot is occupied until next snippet has arrived
     snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 6 lines to the REGBOT
@@ -1508,6 +1504,8 @@ bool UMission::mission4(int &state)
     break;
   case 999:
   default:
+    // end log
+    //system("lc pose hbt imu ir motor joy event cam aruco mission");
     printf("mission 4 ended \n");
     bridge->send("oled 5 \"mission 4 ended.\"");
     finished = true;
@@ -1588,8 +1586,10 @@ void UMission::TurnAndDriveUntilLineX(int state, float turn){
     printf("# case=%d sent mission snippet\n", state);
 }
 
-void UMission::FindLineAfterBall(int& state, float ang){
+void UMission::FindLineAfterBall(int& state, int direc){
   float heading = (bridge->pose->h)*180.0/M_PI;
+
+  float turnang = heading_ref-90-heading;
 
   int line = 0;
   // raise arm
@@ -1600,8 +1600,9 @@ void UMission::FindLineAfterBall(int& state, float ang){
   snprintf(lines[line++], MAX_LEN, "vel=0.2: dist=0.2");
   // stop a few seconds
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
-  // turn 90 degrees to the left
-  snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading+ang, ang);
+  // turn towards line
+  //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading+ang, ang);
+  snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading_ref-90, turnang);
   // stop a few seconds
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // drive until line crossing
@@ -1631,25 +1632,25 @@ void UMission::Drive2LineX(int state){
   // raise arm
   snprintf(lines[line++], MAX_LEN, "servo=3, pservo=-300, vservo=10");
   // drive a bit forward slowly
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: dist=0.4");
+  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=3, edgel=-1, white=1: dist=0.4");
   // speed up until line
-  snprintf(lines[line++], MAX_LEN, "vel=0.5, acc=1, edgel=-1, white=1: xl=20");
+  snprintf(lines[line++], MAX_LEN, "vel=0.5, edgel=-1, white=1: xl=20");
   // stop a few seconds
-  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=2");
+  snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=10 : time=1.5");
   // back up
-  snprintf(lines[line++], MAX_LEN, "vel=-0.3: dist=0.5");
+  //snprintf(lines[line++], MAX_LEN, "vel=-0.3: dist=0.1");
   // stop a few seconds
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=0.5");
   // drive slowly to line
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: dist=0.15");
+  //snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: dist=0.15");
   // drive slowly to line
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl=20");
+  //snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl=20");
   // continue
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, edgel=-1, white=1: dist=0.1");
+  //snprintf(lines[line++], MAX_LEN, "vel=0.2, edgel=-1, white=1: dist=0.1");
   // drive until after crossing
   //snprintf(lines[line++], MAX_LEN, "vel=0.1, acc=1, edgel=-1, white=1: dist=0.05");
   // stop a few seconds
-  snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=2 : time=2");
+  //snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=2 : time=2");
   // create event 1
   snprintf(lines[line++], MAX_LEN, "event=1, vel=0.0");
   // add a line, so that the robot is occupied until next snippet has arrived
@@ -1726,6 +1727,10 @@ void UMission::DeliverBall(int state){
   snprintf(lines[line++], MAX_LEN, "servo=2, pservo=300, vservo=10");
   // wait 4 seconds
   snprintf(lines[line++], MAX_LEN, ": time = 2");
+  // raise arm
+  snprintf(lines[line++], MAX_LEN, "vel=0, servo=3, pservo=-300, vservo=10");
+  // wait 2 seconds
+  snprintf(lines[line++], MAX_LEN, ": time = 2");
   // back up
   snprintf(lines[line++], MAX_LEN, "vel=-0.3: dist=0.5");
   // create event 1
@@ -1744,6 +1749,12 @@ void UMission::SaveHeading(){
   heading_ref = (bridge->pose->h);
   heading_ref = atan2(sin(heading_ref), cos(heading_ref))*180.0/M_PI;
   cout << "Heading reference: " << heading_ref << endl;
+}
+
+void UMission::PlaySound(const char * file){
+  play.setFile(file);
+  play.setVolume(100); // % (0..100)
+  play.start();
 }
 /*
 * //////////////////////////////////////////

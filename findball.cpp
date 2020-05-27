@@ -82,11 +82,11 @@ int FindBalls::doFindBallProcessingCloud(cv::Mat frame, int frameNumber, UTime i
 {
     vector<vector<cv::Point2f>> ballCorners;
     vector<cv::Vec3d> rotationVectors, translationVectors;
-    const float ballSqaureDimensions = 0.041;
+    const float ballSqaureDimensions = 0.040;
     printf("Sending image\n");
-    cv::imwrite("frame.jpg", frame);
+    cv::imwrite("../images/frame.jpg", frame);
 
-    system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
+    system("scp ../images/frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
     int listen = 6;
     const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
     printf("Waiting for cloud processing\n");
@@ -176,7 +176,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
     inRange(hsv, cv::Scalar(3, 100, 130), cv::Scalar(20, 211, 210), frame_thresh); //25.05
 
     if(debug){
-        cv::imwrite("thresh.jpg", frame_thresh);
+        cv::imwrite("../images/thresh.jpg", frame_thresh);
     }
 
     // erosion removes noise
@@ -190,7 +190,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
 
     // save image
     if(debug){
-        cv::imwrite("gray.jpg", gray);
+        cv::imwrite("../images/gray.jpg", gray);
     }
 
     // do hough circles
@@ -198,7 +198,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
 
     // save image
     if(debug){
-        cv::imwrite("frame.jpg", frame);
+        cv::imwrite("../images/frame.jpg", frame);
     }
 
     //sleep(1);
@@ -218,7 +218,7 @@ int FindBalls::doFindBallProcessing(cv::Mat frame, int frameNumber, UTime imTime
 
     // save image with circles
     if(debug){
-        cv::imwrite("circles.jpg", frame);
+        cv::imwrite("../images/circles.jpg", frame);
     }
 
     if (circles.size() == 1)
@@ -320,7 +320,7 @@ int FindBalls::doFindBallProcessingColor(cv::Mat frame, int frameNumber, UTime i
     inRange(hsv, hsv_ranges[ballColor][0], hsv_ranges[ballColor][1], frame_thresh); //25.05
 
     if(debug){
-        cv::imwrite("thresh.jpg", frame_thresh);
+        cv::imwrite("../images/thresh.jpg", frame_thresh);
     }
 
     // erosion removes noise
@@ -334,7 +334,7 @@ int FindBalls::doFindBallProcessingColor(cv::Mat frame, int frameNumber, UTime i
 
     // save image
     if(debug){
-        cv::imwrite("gray.jpg", gray);
+        cv::imwrite("../images/gray.jpg", gray);
     }
 
     // do hough circles
@@ -342,7 +342,7 @@ int FindBalls::doFindBallProcessingColor(cv::Mat frame, int frameNumber, UTime i
 
     // save image
     if(debug){
-        cv::imwrite("frame.jpg", frame);
+        cv::imwrite("../images/frame.jpg", frame);
     }
 
     //sleep(1);
@@ -362,7 +362,7 @@ int FindBalls::doFindBallProcessingColor(cv::Mat frame, int frameNumber, UTime i
 
     // save image with circles
     if(debug){
-        cv::imwrite("circles.jpg", frame);
+        cv::imwrite("../images/circles.jpg", frame);
     }
 
     if (circles.size() == 1)
@@ -421,7 +421,7 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     vector<vector<cv::Point2f>> ballCorners;
     vector<vector<cv::Point2f>> foundBallCorners;
     vector<cv::Vec3d> rotationVectors, translationVectors;
-    const float ballSqaureDimensions = 0.041;
+    const float ballSqaureDimensions = 0.040;
 
     // Blue HSV values:     lower [110, 50, 50]
     //                      upper [130, 255, 255]
@@ -434,9 +434,9 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     vector<double> hueref_values = {15, 120}; // {Orange, Blue}
 
     printf("Sending image\n");
-    cv::imwrite("frame.jpg", frame);
+    cv::imwrite("../images/frame.jpg", frame);
     
-    system("scp frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
+    system("scp ../images/frame.jpg dennis@192.168.1.149:~/cloud_process/Images/frame.jpg");
     int listen = 15;
     const char *ip = "192.168.1.149"; // MQTT broker connection ip address (192.168.1.149 Dennis computer at Martins house)
     printf("Waiting for cloud processing\n");
@@ -454,7 +454,7 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     for (uint j = 0; j < ballCorners.size(); j++)
     {
         char namech[100];
-        snprintf(namech, sizeof(namech), "%s%d%s", "cropped", j, ".jpg");
+        snprintf(namech, sizeof(namech), "../images/%s%d%s", "cropped", j, ".jpg");
         string namestr = namech;
 
         printf("%d, %d\n", frame.rows, frame.cols);
@@ -535,6 +535,6 @@ int FindBalls::doFindBallColor(cv::Mat frame, int frameNumber, UTime imTime, int
     v->tVec = translationVectors[0];
     v->ballToRobotCoordinate(cam->cam2robot);
     v->lock.unlock();
-
+    
     return EXIT_SUCCESS; 
 }

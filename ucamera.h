@@ -56,7 +56,7 @@ public:
 
   // Do ball find detection
   bool doFindBall = false;
-  // See if a ball has been found (1 = EXIT_FAILURE)
+  // See if a ball has been found (1 = EXIT_FAILURE, 0 = EXIT_SUCCESS)
   int ballFound = 1;
   // flag to do ArUcoAnalysis
   bool doArUcoAnalysis = false;
