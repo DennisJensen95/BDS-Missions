@@ -245,15 +245,15 @@ void UMission::runMission()
         {
         case 1: // running auto mission
           ended = mission1(missionState);
-          // ended = true;
+          //ended = true;
           break;
         case 2:
-          ended = mission2(missionState);
-          // ended = true;
+          //ended = mission2(missionState);
+          ended = true;
           break;
         case 3:
-          ended = mission3(missionState);
-          //ended = true;
+          //ended = mission3(missionState);
+          ended = true;
           break;
         case 4:
           ended = mission4(missionState);
@@ -376,9 +376,6 @@ bool UMission::mission1(int &state)
     // add a line, so that the robot is occupied until next snippet has arrived
     snprintf(lines[line++], MAX_LEN, ": dist=1");
     // send the 4 lines to the REGBOT
-    play.setFile("../bruh.mp3");
-    play.setVolume(100); // % (0..100)
-    play.start();
     sendAndActivateSnippet(lines, line);
     // make sure event 1 is cleared
     bridge->event->isEventSet(1);
@@ -419,9 +416,6 @@ bool UMission::mission2(int &state)
   {
   case 0:
   {
-    play.setFile("../bruh.mp3");
-    play.setVolume(100); // % (0..100)
-    play.start();
     float heading = (bridge->pose->h)*180.0/M_PI;
 
     // printf("Heading = %f\n", heading);
@@ -604,8 +598,6 @@ bool UMission::mission3(int &state)
     break;
   case 1:
   {
-    PlaySound("../yeah.mp3");
-
     // drive until reaching a line crossing
     Drive2LineX(state);
     //
@@ -650,6 +642,7 @@ bool UMission::mission3(int &state)
     if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < 1.5){
       SaveHeading();
       state = 12;
+      PlaySound("../sounds/orangeball.mp3");
     }
   case 12: // start ball analysis
   {
@@ -872,10 +865,12 @@ bool UMission::mission3(int &state)
       if (cam->ballFound == 0)
       { // found a single ball
         state = 12;
+        PlaySound("../sounds/bruh.mp3");
       }
       else
       { // ball has been picked up
         state = 50;
+        PlaySound("../sounds/yeah.mp3");
       }
     }
     break;
@@ -1048,25 +1043,18 @@ bool UMission::mission4(int &state)
   case 0:
     // tell the operatior what to do
     printf("# started mission 4.\n");
-    system("espeak \"looking for ArUco\" -ven+f4 -s130 -a5 2>/dev/null &"); 
-    bridge->send("oled 5 looking 4 ArUco");
     caseCounter = 0;
     state=1;
     break;
   case 1:
   {
-    PlaySound("../bruh.mp3");
     TurnAndDriveUntilLineX(state);
     // go to wait for finished
     state = 2;
     break;
   }
   case 2:
-    // wait for event 1 (send when finished driving first part)
-    if (bridge->event->isEventSet(1))
-    { // finished first drive
-      state = 5;
-    }
+    WaitForEvent(state, 5);
     break;
   case 5:
     // wait for finished driving 
@@ -1121,6 +1109,12 @@ bool UMission::mission4(int &state)
     if (fabsf(bridge->motor->getVelocity()) < 0.001 and bridge->imu->turnrate() < 1.5){
       SaveHeading();
       state = 12;
+
+      if (cam->markerId == 1){
+        PlaySound("../sounds/blueball.mp3");
+      }else{
+        PlaySound("../sounds/orangeball.mp3");
+      }
     }
     break;
   case 12: // start ball analysis
@@ -1352,13 +1346,12 @@ bool UMission::mission4(int &state)
       if (cam->ballFound == 0)
       { // found a ball
         state = 12;
-        play.setFile("../bruh.mp3");
-        play.setVolume(100); // % (0..100)
-        play.start();
+        PlaySound("../sounds/bruh.mp3");
       }
       else
       { // ball has been picked up
         state = 50;
+        PlaySound("../sounds/yeah.mp3");
       }
     }
     break;
@@ -1751,11 +1744,12 @@ void UMission::SaveHeading(){
   cout << "Heading reference: " << heading_ref << endl;
 }
 
-void UMission::PlaySound(const char * file){
+void UMission::PlaySound(const char* file){
   play.setFile(file);
   play.setVolume(100); // % (0..100)
   play.start();
 }
+
 /*
 * //////////////////////////////////////////
 * //////////////////////////////////////////
