@@ -1,4 +1,8 @@
 # BDS-Missions 
+### Authors
+
+**By Dennis Jensen s155629, Martin Jensen s164033, Theis Munk Jensen s164022, & Stefan M. Carius Larsen s164029**
+
 ### Compiling and running the code
 
 For compiling and running the code one must install the MQTT library in addition to libraries used in 31386 Building Dependable Robot Systems.
