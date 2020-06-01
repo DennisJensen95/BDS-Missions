@@ -245,11 +245,11 @@ void UMission::runMission()
         {
         case 1: // running auto mission
           ended = mission1(missionState);
-          //ended = true;
+          // ended = true;
           break;
         case 2:
           ended = mission2(missionState);
-          //ended = true;
+          // ended = true;
           break;
         case 3:
           ended = mission3(missionState);
@@ -512,7 +512,7 @@ bool UMission::mission2(int &state)
     // stop a few seconds
     snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
     // drive onto line
-    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.6: xl=20");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.6: xl>16");
     // continue past line
     snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.6: xl<4, dist=0.1");
     // Move to line
@@ -1586,11 +1586,11 @@ void UMission::TurnAndDriveUntilLineX(int state, float turn){
     // turn 90 degrees to the left
     snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading+turn, turn);
     // stop a few seconds
-    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+    snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=0.5");
     // drive a bit forward
-    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=-1, white=1 : dist=0.2");
+    snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=1, edgel=-1, white=1  : time=0.5");
     // drive until line crossing
-    snprintf(lines[line++], MAX_LEN, "edgel=-1, white=1 : xl=20");
+    snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.6, edgel=-1, white=1 : xl>16");
     // drive until line is crossed fully
     snprintf(lines[line++], MAX_LEN, "vel=0.1: xl<4, dist=0.1");
     // create event 1
@@ -1621,19 +1621,22 @@ void UMission::FindLineAfterBall(int& state, int direc){
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // turn towards line
   //snprintf(lines[line++], MAX_LEN, "vel=0.3, acc=0.5, head=%.1f: turn=%.1f", heading+ang, ang);
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, head=%.1f: turn=%.1f", heading_ref-90, turnang);
+  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.5, head=%.1f: head=%.1f", heading_ref-90, turnang);
   // stop a few seconds
-  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
+  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=0.5");
   // drive until line crossing
-  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: xl=20");
+  snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=0.6, white=1: xl>16");
+
+  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // drive until after crossing
+  // snprintf(lines[line++], MAX_LEN, "vel=0.2: xl<4, dist=0.15");
   snprintf(lines[line++], MAX_LEN, "vel=0.1: dist=0.1");
   // stop a few seconds
   snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // turn to saved heading
   snprintf(lines[line++], MAX_LEN, "topos=0, vel=0.3, acc=0.5, head=%.1f: time=2", heading_ref);
   // wait 2 seconds
-  snprintf(lines[line++], MAX_LEN, ": time = 0.5");
+  // snprintf(lines[line++], MAX_LEN, ": time = 0.5");
   // create event 1
   snprintf(lines[line++], MAX_LEN, "event=1, vel=0.0");
   // add a line, so that the robot is occupied until next snippet has arrived
@@ -1654,13 +1657,15 @@ void UMission::Drive2LineX(int state){
   // drive a bit forward slowly
   snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=3, edgel=-1, white=1: dist=0.4");
   // speed up until line
-  snprintf(lines[line++], MAX_LEN, "vel=0.5, edgel=-1, white=1: xl=20");
+  snprintf(lines[line++], MAX_LEN, "vel=0.5, edgel=-1, white=1: xl>12, dist=1.5");
+  // slow down to detect line
+  snprintf(lines[line++], MAX_LEN, "vel=0.3, edgel=-1, white=1: xl>12");
   // stop a few seconds
-  snprintf(lines[line++], MAX_LEN, "vel=0.0, acc=10 : time=1.5");
+  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // back up
-  //snprintf(lines[line++], MAX_LEN, "vel=-0.3: dist=0.1");
+  // snprintf(lines[line++], MAX_LEN, "vel=-0.3 : dist=0.1");
   // stop a few seconds
-  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=0.5");
+  snprintf(lines[line++], MAX_LEN, "vel=0.0 : time=1");
   // drive slowly to line
   //snprintf(lines[line++], MAX_LEN, "vel=0.2, acc=1, edgel=-1, white=1: dist=0.15");
   // drive slowly to line
@@ -1777,8 +1782,8 @@ void UMission::PlaySound(const char* file){
 
   // create new string
 	char buffer[256];
-	strncpy_s(buffer, path, sizeof(buffer));
-	strncat_s(buffer, file, sizeof(buffer));
+	strncpy(buffer, path, sizeof(buffer));
+	strncat(buffer, file, sizeof(buffer));
 
   // edit original input
 	file = (char*)&buffer;
